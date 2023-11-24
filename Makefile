@@ -1,12 +1,16 @@
-TARGETS=send handle fork
-all:	${TARGETS} 
+TARGETS = house.o logger.o main.o utils.o
+OBJECTS = -Wextra -Wall
+all:	house logger main utils
+		gcc ${OBJECTS} -o ghostTest ${TARGETS} 
 
-send: 	p1-send.c
-		gcc -o send p1-send.c
-handle: 	p1-handle.c 
-		gcc -o handle p1-handle.c  
-fork: 
-		gcc -o fork p2-fork.c  
+house: 	house.c defs.h
+		gcc ${OBJECTS} -c house.c
+logger: logger.c defs.h
+		gcc ${OBJECTS} -c logger.c  
+main: 	main.c defs.h
+		gcc ${OBJECTS} -c main.c  
+utils:	utils.c defs.h
+		gcc ${OBJECTS} -c utils.c  
 clean:
-		rm -f p1-send.o p1-handle.o p2-fork.o
+		rm -f ${TARGETS} ghostTest.o
 

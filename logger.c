@@ -9,7 +9,17 @@ void l_hunterInit(char* hunter, enum EvidenceType equipment) {
     if (!LOGGING) return;
     char ev_str[MAX_STR];
     evidenceToString(equipment, ev_str);
-    printf("[HUNTER INIT] [%s] is a [%s] hunter\n", hunter, ev_str);    
+    printf("[HUNTER INIT] [%s] is a [%s] hunter\n", hunter, ev_str); 
+}
+
+/* 
+    inits hunter values
+    in: hunter - the hunter name to log
+    in: equipment - the hunter's equipment
+*/
+void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter) {
+    strcpy(hunter->name , name);
+    hunter->equipment = equipment;
 }
 
 /*

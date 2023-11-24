@@ -54,3 +54,62 @@ void populateRooms(HouseType* house) {
     addRoom(&house->rooms, garage);
     addRoom(&house->rooms, utility_room);
 }
+/*
+    creates room
+        in/out:   name of room 
+*/
+RoomType* createRoom(char *name){
+    RoomType* room = malloc(sizeof(RoomType));
+    strcpy(room->name, name); 
+    room->ghost = NULL;
+    return room;
+}
+/*
+    set roomList in room
+        2 in/out:   rooms that will be connected to one another
+*/
+void connectRooms(RoomType* room1, RoomType* room2){
+    appendRoom(room1->connectedTo, room2);
+    appendRoom(room2->connectedTo, room1);
+}
+/*
+    adds room to house
+        in:         room to be added to house
+        in/out:     house that will add said room
+*/
+void addRoom(RoomListType** roomList, RoomType* room){
+    appendRoom(*roomList, room);
+}
+int appendRoom(RoomListType* roomList, RoomType* room) {
+  if(roomList == NULL || room == NULL) {
+    return C_FALSE;
+  }
+    NodeType* newNode = (struct Node*) malloc(sizeof(NodeType));
+
+    newNode->data = room;
+    newNode->next = NULL;
+
+    if(roomList->head == NULL) {
+      roomList->head = newNode;
+    } else {
+      NodeType* currentNode = roomList->head;
+      while(currentNode->next != NULL) {
+        currentNode = currentNode->next;
+      }
+      currentNode->next = newNode;
+    }
+
+    return C_TRUE;
+}
+/*
+    initalize house values
+        in:         room to be added to house
+        in/out:     house that will add said room
+*/
+void initHouse(HouseType* house){
+    for(int i = 0; i < MAX_EVIDENCE; i++){
+        house->evidence[i] = NULL;
+    }
+    house->rooms = NULL;
+    house->hunters = NULL;
+}
