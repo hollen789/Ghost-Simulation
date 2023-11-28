@@ -90,6 +90,7 @@ struct Hunter {
   char    name[MAX_STR];
   int     fearLevel;
   int     boredLevel;
+  RoomType* room;
 };
 
 struct HunterArray {

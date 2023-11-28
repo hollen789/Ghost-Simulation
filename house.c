@@ -62,6 +62,9 @@ RoomType* createRoom(char *name){
     RoomType* room = malloc(sizeof(RoomType));
     strcpy(room->name, name); 
     room->ghost = NULL;
+    room->connectedTo = malloc(sizeof(RoomListType));
+    room->connectedTo->head = NULL;
+    room->connectedTo->tail = NULL;
     return room;
 }
 /*
@@ -69,8 +72,8 @@ RoomType* createRoom(char *name){
         2 in/out:   rooms that will be connected to one another
 */
 void connectRooms(RoomType* room1, RoomType* room2){
-    appendRoom(room1->connectedTo, room2);
-    appendRoom(room2->connectedTo, room1);
+    addRoom(&room1->connectedTo, room2);
+    addRoom(&room2->connectedTo, room1);
 }
 /*
     adds room to house
@@ -78,28 +81,23 @@ void connectRooms(RoomType* room1, RoomType* room2){
         in/out:     house that will add said room
 */
 void addRoom(RoomListType** roomList, RoomType* room){
-    appendRoom(*roomList, room);
-}
-int appendRoom(RoomListType* roomList, RoomType* room) {
-  if(roomList == NULL || room == NULL) {
-    return C_FALSE;
-  }
+    // printf("%s",room);
+    printf("%s",room->name);
     NodeType* newNode = (struct Node*) malloc(sizeof(NodeType));
 
     newNode->data = room;
     newNode->next = NULL;
 
-    if(roomList->head == NULL) {
-      roomList->head = newNode;
+    if((*roomList)->head == NULL) {
+      (*roomList)->head = newNode;
     } else {
-      NodeType* currentNode = roomList->head;
+      NodeType* currentNode = (*roomList)->head;
       while(currentNode->next != NULL) {
         currentNode = currentNode->next;
       }
       currentNode->next = newNode;
     }
 
-    return C_TRUE;
 }
 /*
     initalize house values
@@ -110,6 +108,12 @@ void initHouse(HouseType* house){
     for(int i = 0; i < MAX_EVIDENCE; i++){
         house->evidence[i] = NULL;
     }
-    house->rooms = NULL;
-    house->hunters = NULL;
+   
+    house->rooms = malloc(sizeof(RoomListType));
+    house->rooms->head = NULL;
+    house->rooms->tail = NULL;
+    house->hunters = malloc(sizeof(HunterArrayType));
+    for(int i = 0;i<HUNTERS;i++){
+        house->hunters->hunterList[i] = NULL;
+    }
 }
