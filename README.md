@@ -1,18 +1,18 @@
 (this is a temp format for the README file)
 
-Name: Hollen Lo
-Student ID:101260373
+Name: Hollen Lo and Samuel Ross
+Student ID:101260373 and 100978341
 
 Purpose of Program:
 
-To simulate a program that documents the ID, Type, Room, and likelihood of a ghost inside a building, and displays the information in certain formats depending predefined options that the User can choose. 
+To simulate a hunt in a house where the hunters move through the rooms in the house searching for a ghost which is also randomly moving through the house
 
 List of Files included in Program and their purposes:
 
-- main.c: contains code related to user input
-- ghost.c: contains code related to ghost related functions
-- building.c: contains code related to building related functions
-- room.c: contains code related to room related functions
+- main.c: contains code related to user input and runs the entire program
+- logger.c: contains code related to logging all the movements of the ghost and the hunters.
+- house.c: contains code related to house related functions
+- utils.c: contains code that provides utility functions that are used in the Ghost Simulation program
 - defs.h: contains definition of constant variables and interfaces for functions in c files
 - Makefile: contains defined compilation commands that can be used when compiling the files
 - README.txt: contains this description
@@ -26,19 +26,7 @@ Compiling and Running the File:
 
 How to Use the Program:
 
-when program begins, the user will be prompted a menu which displays these 5 options:
-(1) Print rooms
-(2) Print ghosts
-(3) Print ghosts by likelihood
-(4) Print most/least likely ghosts
-(0) Exit
-the user will then asked to input an option.
-- when '1' is inputted, the user will be prompted a formatted list of rooms in the building, according to the order of insertion(for both the rooms and ghosts of the building).
-- when '2' is inputted, the user will be prompted a list of ghosts in the building,in ascending order by ghost ID.
-- when '3' is inputted, the user will be prompted a list of ghosts in the building, in descending order by ghost likelihood.
-- when '4' is inputted, the user will be prompted the most likely and least likely ghost to appear in the building.
-- when '0' is inputted, the program will quit.
-all of the data within this program is predefined and the user cannot alter it in anyway.
+when program begins, the user will be prompted to enter the names of 4 hunters. Once the names are all entered it will run a simulation to see if either the ghost wins by the hunters being in the house too long and getting scared or if the hunters win by finding all the evidence of the ghost before they get too scared or bored or noone wins beacuse the hunters get too bored and leave
 
 Usage of Generative AI:
 
