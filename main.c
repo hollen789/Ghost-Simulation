@@ -38,16 +38,7 @@ int main()
     srand(time(NULL));
     GhostType ghost;  
     init_ghost(&ghost, house.rooms);
-    // printf("Ghost is in %s\n", ghost.room->name);
-    // for(int i=0; i<4; i++){
-    //     printf("%d\n", ghost.evidence[i]);
-    // }
-    // char ghostType[50];
-    // ghostToString(ghost.ghostType, ghostType);
-    // printf("%s", ghostType);
-    // Create the house: You may change this, but it's here for demonstration purposes
-    // Note: This code will not compile until you have implemented the house functions and structures
-    //this all needs to go before the Hunters are created so the hunters can be placed in the van room
+    
     printf("thread creation");
     sleep(5);
     pthread_t ghostThread;
