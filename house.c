@@ -112,10 +112,11 @@ void addRoom(RoomListType** roomList, RoomType* room){
         in:         room to be added to house
         in/out:     house that will add said room
 */
-void initHouse(HouseType* house){
-    for(int i = 0; i < MAX_EVIDENCE; i++){
-        house->evidence[i] = NULL;
-    }
+void initHouse(HouseType* house,EvidenceType* evidence){
+    // for(int i = 0; i < MAX_EVIDENCE; i++){
+    //     house->evidence[i] = NULL;
+    // }
+    (*house->evidence) = evidence;
    
     house->rooms = malloc(sizeof(RoomListType));
     house->rooms->head = NULL;

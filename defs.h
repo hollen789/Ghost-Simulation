@@ -20,6 +20,8 @@
 #define MAX_EVIDENCE    3
 #define ROOMS           30
 #define HUNTERS         4
+#define HUNTER          1 
+#define GHOST           0
 
 typedef enum EvidenceType EvidenceType;
 typedef enum GhostClass GhostClass;
@@ -56,20 +58,20 @@ void l_ghostMove(char* room);
 void l_ghostEvidence(enum EvidenceType evidence, char* room);
 void l_ghostExit(enum LoggerDetails reason);
 //new declarations
-void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter); 
+void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, EvidenceType* evidence); 
 RoomType* createRoom(char*);
 void connectRooms(RoomType*, RoomType*);
 void addRoom(RoomListType**, RoomType*);
 int appendRoom(RoomListType*, RoomType*); 
 void populateRooms(HouseType*);
-void initHouse(HouseType*);
+void initHouse(HouseType*, EvidenceType*);
 void init_ghost(GhostType*, RoomListType*);
 void* ghostUpdate(void*);
 void* hunterUpdate(void*);
 void ghostMove(GhostType*);
 void ghostEvidence(GhostType*);
-void hunterCollect(HunterType*, HouseType*);
-void hunterReview(HouseType*, HunterType*);
+void hunterCollect(HunterType*);
+void hunterReview(HunterType*);
 void hunterMove(HunterType*);
 
 // classes
@@ -116,6 +118,8 @@ struct Hunter {
   char    name[MAX_STR];
   int     fearLevel;
   int     boredLevel;
+  EvidenceType* evidence[MAX_EVIDENCE];
+  sem_t   mutex;
   RoomType* room;
 };
 
@@ -134,5 +138,6 @@ typedef struct ThreadData{
   HunterArrayType* hunters;
   HunterType* hunter;
   HouseType* house;
+  int type;
   // RoomListType* rooms;
 } ThreadDataType;

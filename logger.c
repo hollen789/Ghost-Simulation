@@ -19,19 +19,23 @@ void l_hunterInit(char* hunter, enum EvidenceType equipment) {
     in: hunter - the hunter name to log
     in: equipment - the hunter's equipment
 */
-void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter) {
+void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, EvidenceType* evidence) {
     strcpy(hunter->name , name);
     hunter->equipment = equipment;
     hunter->fearLevel = 0;
     hunter->boredLevel = 0;
+    (*hunter->evidence) = evidence;
+    sem_init(&hunter->mutex, 0, 1);
     //hunter->room = house.rooms->head->data;
 }
 
 void init_ghost(GhostType* ghost, RoomListType* rooms){
+    printf("entering init ghost");
     ghost->ghostType = randomGhost();
     RoomNodeType* temp = rooms->head;
     ghost->boredomLevel = 0;
-    for(int i=0; i<randInt(1,rooms->size); i++){
+    int randomIndex = randInt(1, rooms->size);
+    for (int i = 0; i < randomIndex && temp != NULL; i++) {
         temp = temp->next;  
     }
     ghost->room = temp->data;
@@ -219,11 +223,11 @@ void ghostEvidence(GhostType* ghost){
     l_ghostEvidence(ghost->evidence[choice], ghost->room->name);
 }
 
-void hunterCollect(HunterType* hunter, HouseType* house) {
+void hunterCollect(HunterType* hunter) {
     EvidenceType canCollect = hunter->equipment;
     int alreadyCollected = C_FALSE;
     for (int i = 0; i < MAX_EVIDENCE; i++) {
-        if (house->evidence[i]!=NULL && (*house->evidence[i]) == canCollect) {
+        if (hunter->evidence[i]!=NULL && (*hunter->evidence[i]) == canCollect) {
             alreadyCollected = C_TRUE;
             break;
         }
@@ -252,16 +256,16 @@ void hunterCollect(HunterType* hunter, HouseType* house) {
     }
     if (alreadyCollected == C_FALSE) {
         int i = 0;
-        while (house->evidence[i] != NULL) {
+        while (hunter->evidence[i] != NULL) {
             i++;
         }
-        house->evidence[i] = evidence;
+        hunter->evidence[i] = evidence;
     }  
     l_hunterCollect(hunter->name, hunter->equipment, hunter->room->name);
 }
 
-void hunterReview(HouseType* house, HunterType* hunter){
-    if(house->evidence[MAX_EVIDENCE-1]!=NULL){
+void hunterReview(HunterType* hunter){
+    if(hunter->evidence[MAX_EVIDENCE-1]!=NULL){
         l_hunterReview(hunter->name, LOG_SUFFICIENT);
         
         // ghostToString(ghost->ghostType,name);
