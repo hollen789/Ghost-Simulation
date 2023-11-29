@@ -82,8 +82,8 @@ void connectRooms(RoomType* room1, RoomType* room2){
 */
 void addRoom(RoomListType** roomList, RoomType* room){
     // printf("%s",room);
-    printf("%s",room->name);
-    NodeType* newNode = (struct Node*) malloc(sizeof(NodeType));
+    // printf("%s",room->name);
+    RoomNodeType* newNode = (struct RoomNode*) malloc(sizeof(RoomNodeType));
 
     newNode->data = room;
     newNode->next = NULL;
@@ -91,13 +91,21 @@ void addRoom(RoomListType** roomList, RoomType* room){
     if((*roomList)->head == NULL) {
       (*roomList)->head = newNode;
     } else {
-      NodeType* currentNode = (*roomList)->head;
+      RoomNodeType* currentNode = (*roomList)->head;
       while(currentNode->next != NULL) {
         currentNode = currentNode->next;
       }
       currentNode->next = newNode;
     }
+    (*roomList)->size++;
+    room->evidence = malloc(sizeof(EvidenceListType));
+    room->evidence->head = NULL;
+    room->evidence->size = 0;
 
+    room->hunters = malloc(sizeof(HunterArrayType));
+    for(int i = 0;i<HUNTERS;i++){
+        room->hunters->hunterList[i] = NULL;
+    }
 }
 /*
     initalize house values

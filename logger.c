@@ -8,7 +8,7 @@
 void l_hunterInit(char* hunter, enum EvidenceType equipment) {
     if (!LOGGING) return;
     char ev_str[MAX_STR];
-    printf("test");
+    //printf("test");
     evidenceToString(equipment, ev_str);
     printf(ev_str, MAX_STR);
     printf("[HUNTER INIT] [%s] is a [%s] hunter\n", hunter, ev_str); 
@@ -25,6 +25,44 @@ void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter) {
     hunter->fearLevel = 0;
     hunter->boredLevel = 0;
     //hunter->room = house.rooms->head->data;
+}
+
+void init_ghost(GhostType* ghost, RoomListType* rooms){
+    ghost->ghostType = randomGhost();
+    RoomNodeType* temp = rooms->head;
+    ghost->boredomLevel = 0;
+    for(int i=0; i<randInt(1,rooms->size); i++){
+        temp = temp->next;  
+    }
+    ghost->room = temp->data;
+
+    switch(ghost->ghostType){
+        case POLTERGEIST:
+            ghost->evidence[0] = EMF;
+            ghost->evidence[1] = TEMPERATURE;
+            ghost->evidence[2] = FINGERPRINTS;
+            break;
+        case BANSHEE:
+            ghost->evidence[0] = EMF;
+            ghost->evidence[1] = TEMPERATURE;
+            ghost->evidence[2] = SOUND;
+            break;
+        case BULLIES:
+            ghost->evidence[0] = EMF;
+            ghost->evidence[1] = FINGERPRINTS;
+            ghost->evidence[2] = SOUND;
+            break;
+        case PHANTOM:
+            ghost->evidence[0] = TEMPERATURE;
+            ghost->evidence[1] = FINGERPRINTS;
+            ghost->evidence[2] = SOUND;
+            break;
+        default:
+            ghost->evidence[0] = EV_UNKNOWN;
+            ghost->evidence[1] = EV_UNKNOWN;
+            ghost->evidence[2] = EV_UNKNOWN;
+            break;
+    }
 }
 
 /*
@@ -146,4 +184,103 @@ void l_ghostInit(enum GhostClass ghost, char* room) {
     char ghost_str[MAX_STR];
     ghostToString(ghost, ghost_str);
     printf("[GHOST INIT] Ghost is a [%s] in room [%s]\n", ghost_str, room);
+}
+
+void ghostMove(GhostType* ghost){
+    int choice = randInt(0, ghost->room->connectedTo->size);
+    RoomNodeType* temp = ghost->room->connectedTo->head;
+    for(int i=0; i<choice; i++){
+        temp = temp->next;
+    }
+    ghost->room->ghost = NULL;
+    ghost->room = temp->data;
+    
+    l_ghostMove(ghost->room->name);
+}
+
+void ghostEvidence(GhostType* ghost){
+    int choice = randInt(0, 3);
+    EvidenceNodeType* newNode = (struct EvidenceNode*) malloc(sizeof(EvidenceNodeType));
+    EvidenceListType* evidenceList = ghost->room->evidence;
+    newNode->data = ghost->evidence+choice;
+    newNode->next = NULL;
+
+    if(evidenceList->head == NULL) {
+        evidenceList->head = newNode;
+    } else {
+      EvidenceNodeType* currentNode = evidenceList->head;
+      while(currentNode->next != NULL) {
+        currentNode = currentNode->next;
+      }
+      currentNode->next = newNode;
+    }
+    evidenceList->size++;
+
+    l_ghostEvidence(ghost->evidence[choice], ghost->room->name);
+}
+
+void hunterCollect(HunterType* hunter, HouseType* house) {
+    EvidenceType canCollect = hunter->equipment;
+    int alreadyCollected = C_FALSE;
+    for (int i = 0; i < MAX_EVIDENCE; i++) {
+        if (house->evidence[i]!=NULL && (*house->evidence[i]) == canCollect) {
+            alreadyCollected = C_TRUE;
+            break;
+        }
+    } 
+    
+    EvidenceNodeType* temp = hunter->room->evidence->head;
+    EvidenceType* evidence = NULL;
+    while (temp != NULL) {
+        if ((*temp->data) == canCollect) {
+            evidence = temp->data;
+            // Remove node from list
+            if (temp->prev != NULL) {
+                temp->prev->next = temp->next;
+            }
+            if (temp->next != NULL) {
+                temp->next->prev = temp->prev;
+            }
+            if (temp->prev == NULL) {
+                hunter->room->evidence->head = temp->next;
+            }
+            free(temp);
+            hunter->room->evidence->size--;
+            break;
+        }
+        temp = temp->next;
+    }
+    if (alreadyCollected == C_FALSE) {
+        int i = 0;
+        while (house->evidence[i] != NULL) {
+            i++;
+        }
+        house->evidence[i] = evidence;
+    }  
+    l_hunterCollect(hunter->name, hunter->equipment, hunter->room->name);
+}
+
+void hunterReview(HouseType* house, HunterType* hunter){
+    if(house->evidence[MAX_EVIDENCE-1]!=NULL){
+        l_hunterReview(hunter->name, LOG_SUFFICIENT);
+        
+        // ghostToString(ghost->ghostType,name);
+        // printf("Ghost has been found. It was a %s\n",name);
+        pthread_exit(NULL);
+    }
+    else{
+        l_hunterReview(hunter->name, LOG_INSUFFICIENT);
+    }
+}
+
+void hunterMove(HunterType* hunter){
+    int choice = randInt(0, hunter->room->connectedTo->size);
+    RoomNodeType* temp = hunter->room->connectedTo->head;
+    for(int i=0; i<choice; i++){
+        temp = temp->next;
+    }
+    hunter->room->hunters->hunterList[hunter->id-1] = NULL;
+    hunter->room = temp->data;
+    hunter->room->hunters->hunterList[hunter->id-1] = hunter;
+    l_hunterMove(hunter->name, hunter->room->name);
 }

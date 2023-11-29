@@ -1,5 +1,5 @@
 TARGETS = house.o logger.o main.o utils.o
-OBJECTS = -Wextra -Wall
+OBJECTS = -Wextra -Wall -lpthread
 all:	house logger main utils
 		gcc ${OBJECTS} -o ghostTest ${TARGETS} 
 

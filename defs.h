@@ -30,11 +30,13 @@ enum LoggerDetails { LOG_FEAR, LOG_BORED, LOG_EVIDENCE, LOG_SUFFICIENT, LOG_INSU
 //new classes
 typedef   struct Room       RoomType;
 typedef   struct RoomList   RoomListType;
-typedef   struct Node       NodeType;
+typedef   struct RoomNode   RoomNodeType;
 typedef   struct Ghost      GhostType;
 typedef   struct Hunter     HunterType;
 typedef   struct HunterArray  HunterArrayType;
 typedef   struct House      HouseType; 
+typedef   struct EvidenceList EvidenceListType;
+typedef   struct EvidenceNode EvidenceNodeType;
 
 // Helper Utilies
 int randInt(int,int);        // Pseudo-random number generator function
@@ -61,29 +63,53 @@ void addRoom(RoomListType**, RoomType*);
 int appendRoom(RoomListType*, RoomType*); 
 void populateRooms(HouseType*);
 void initHouse(HouseType*);
+void init_ghost(GhostType*, RoomListType*);
+void* ghostUpdate(void*);
+void* hunterUpdate(void*);
+void ghostMove(GhostType*);
+void ghostEvidence(GhostType*);
+void hunterCollect(HunterType*, HouseType*);
+void hunterReview(HouseType*, HunterType*);
+void hunterMove(HunterType*);
 
 // classes
 struct Room {
   char    name[MAX_STR];
   GhostType* ghost;
   RoomListType* connectedTo;
+  EvidenceListType* evidence;
+  HunterArrayType* hunters;
 };
+
+struct EvidenceList {
+  EvidenceNodeType* head;
+  int size;
+};
+
+struct EvidenceNode {
+  EvidenceType* data;
+  struct EvidenceNode* next;
+  EvidenceNodeType* prev;
+};
+
 struct RoomList {
-  NodeType* head;
-  NodeType* tail;
+  RoomNodeType* head;
+  RoomNodeType* tail;
+  int size;
 };
-struct Node {
+
+struct RoomNode {
   RoomType* data;
-  struct Node* next;
+  struct RoomNode* next;
 };
 
 struct Ghost {
-  int           id;
-  EvidenceType* evidence[MAX_EVIDENCE];
+  EvidenceType evidence[MAX_EVIDENCE];
   GhostClass ghostType;
   struct Room   *room;
-  float         likelihood;
+  int boredomLevel;
 };
+
 struct Hunter {
   int     id;
   EvidenceType equipment;
@@ -102,3 +128,11 @@ struct House {
   HunterArrayType* hunters;
   EvidenceType* evidence[MAX_EVIDENCE];
 } ;
+
+typedef struct ThreadData{
+  GhostType* ghost;
+  HunterArrayType* hunters;
+  HunterType* hunter;
+  HouseType* house;
+  // RoomListType* rooms;
+} ThreadDataType;
