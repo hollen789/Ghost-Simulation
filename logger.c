@@ -196,15 +196,21 @@ void ghostMove(GhostType* ghost){
     for(int i=0; i<choice; i++){
         temp = temp->next;
     }
+    // sem_wait(&ghost->room->mutex);
+    // sem_wait(&temp->data->mutex);
     ghost->room->ghost = NULL;
     ghost->room = temp->data;
-    
+    ghost->room->ghost = ghost;
+    // sem_post(&temp->data->mutex);
+    // sem_post(&ghost->room->mutex);
+
     l_ghostMove(ghost->room->name);
 }
 
 void ghostEvidence(GhostType* ghost){
     int choice = randInt(0, 3);
     EvidenceNodeType* newNode = (struct EvidenceNode*) malloc(sizeof(EvidenceNodeType));
+    sem_wait(&ghost->room->mutex);
     EvidenceListType* evidenceList = ghost->room->evidence;
     newNode->data = ghost->evidence+choice;
     newNode->next = NULL;
@@ -220,6 +226,7 @@ void ghostEvidence(GhostType* ghost){
     }
     evidenceList->size++;
 
+    sem_post(&ghost->room->mutex);
     l_ghostEvidence(ghost->evidence[choice], ghost->room->name);
 }
 
@@ -232,7 +239,7 @@ void hunterCollect(HunterType* hunter) {
             break;
         }
     } 
-    
+    sem_wait(&hunter->room->mutex);
     EvidenceNodeType* temp = hunter->room->evidence->head;
     EvidenceType* evidence = NULL;
     while (temp != NULL) {
@@ -254,13 +261,17 @@ void hunterCollect(HunterType* hunter) {
         }
         temp = temp->next;
     }
+    sem_post(&hunter->room->mutex);
+    sem_wait(&hunter->mutex);
     if (alreadyCollected == C_FALSE) {
         int i = 0;
         while (hunter->evidence[i] != NULL) {
             i++;
         }
         hunter->evidence[i] = evidence;
-    }  
+    }
+    sem_post(&hunter->mutex);
+
     l_hunterCollect(hunter->name, hunter->equipment, hunter->room->name);
 }
 
@@ -283,6 +294,7 @@ void hunterMove(HunterType* hunter){
     for(int i=0; i<choice; i++){
         temp = temp->next;
     }
+    //potentially needs a sem_wait
     hunter->room->hunters->hunterList[hunter->id-1] = NULL;
     hunter->room = temp->data;
     hunter->room->hunters->hunterList[hunter->id-1] = hunter;

@@ -73,6 +73,8 @@ void ghostEvidence(GhostType*);
 void hunterCollect(HunterType*);
 void hunterReview(HunterType*);
 void hunterMove(HunterType*);
+void initializeSemaphores(sem_t* roomSemaphore)
+void destroySemaphores(sem_t* roomSemaphore);
 
 // classes
 struct Room {
@@ -81,6 +83,7 @@ struct Room {
   RoomListType* connectedTo;
   EvidenceListType* evidence;
   HunterArrayType* hunters;
+  sem_t  mutex;
 };
 
 struct EvidenceList {

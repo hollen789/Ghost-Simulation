@@ -87,3 +87,18 @@ void ghostToString(enum GhostClass ghost, char* buffer) {
         
     }
 }
+
+
+void initializeSemaphores(sem_t* roomSemaphore) {
+    // Initialize the semaphores for each room
+    for (int i = 0; i < ROOMS; i++) {
+        sem_init(&roomSemaphore[i], 0, 1); // Initialize with value 1 (unlocked)
+    }
+}
+
+void destroySemaphores(sem_t* roomSemaphore) {
+    // Destroy the semaphores for each room
+    for (int i = 0; i < ROOMS; i++) {
+        sem_destroy(&roomSemaphore[i]);
+    }
+}

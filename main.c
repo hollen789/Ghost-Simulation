@@ -3,6 +3,7 @@
 
 int main()
 {
+    printf("line 1");
     EvidenceType sharedEvidence[MAX_EVIDENCE];
     for(int i = 0; i < MAX_EVIDENCE; i++){
         sharedEvidence[i] = EV_UNKNOWN;
@@ -37,23 +38,26 @@ int main()
     }
     srand(time(NULL));
     GhostType ghost;  
-    init_ghost(&ghost, house.rooms);
+    // init_ghost(&ghost, house.rooms);
+    // Define a semaphore for each room
+    // sem_t roomSemaphore[ROOMS];
+    // initSemaphores(roomSemaphore);
     
     printf("thread creation");
-    sleep(5);
-    pthread_t ghostThread;
-    pthread_create(&ghostThread, NULL, ghostUpdate, &ghost);
+    // sleep(5);
+    // pthread_t ghostThread;
+    // pthread_create(&ghostThread, NULL, ghostUpdate, &ghost);
 
     
-    pthread_t hunterThreads[4];
-    for(int i = 0; i<4; i++){
-        pthread_create(&hunterThreads[i], NULL, hunterUpdate, &hunters->hunterList[i]);
-    }  
+    // pthread_t hunterThreads[4];
+    // for(int i = 0; i<4; i++){
+    //     pthread_create(&hunterThreads[i], NULL, hunterUpdate, &hunters->hunterList[i]);
+    // }  
     
-    for (int i = 0; i < 4; i++) {
-        pthread_join(hunterThreads[i], NULL);
-    }
-    pthread_join(ghostThread, NULL);
+    // for (int i = 0; i < 4; i++) {
+    //     pthread_join(hunterThreads[i], NULL);
+    // }
+    // pthread_join(ghostThread, NULL);
     //might not work
 
 
