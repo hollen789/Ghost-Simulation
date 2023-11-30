@@ -12,5 +12,5 @@ main: 	main.c defs.h
 utils:	utils.c defs.h
 		gcc ${OBJECTS} -c utils.c  
 clean:
-		rm -f ${TARGETS} ghostTest.o
+		rm -f ${TARGETS} ghostTest
 
