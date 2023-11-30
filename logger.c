@@ -30,7 +30,7 @@ void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, Evi
 }
 
 void init_ghost(GhostType* ghost, RoomListType* rooms){
-    printf("entering init ghost");
+    //printf("entering init ghost");
     ghost->ghostType = randomGhost();
     RoomNodeType* temp = rooms->head;
     ghost->boredomLevel = 0;

@@ -68,6 +68,7 @@ void *hunterUpdate(void* args){
     int alive = C_TRUE;
     usleep(HUNTER_WAIT);
     while(alive){
+        printf("test");
         sem_wait(&(hunter->room->mutex));
         checkGhost(hunter);
         sem_post(&(hunter->room->mutex));
