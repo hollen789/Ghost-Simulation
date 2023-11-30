@@ -87,18 +87,30 @@ void ghostToString(enum GhostClass ghost, char* buffer) {
         
     }
 }
-
-
-void initializeSemaphores(sem_t* roomSemaphore) {
+void initSemaphores(RoomListType* roomSemaphore) {
     // Initialize the semaphores for each room
-    for (int i = 0; i < ROOMS; i++) {
-        sem_init(&roomSemaphore[i], 0, 1); // Initialize with value 1 (unlocked)
+    RoomNodeType* temp = roomSemaphore->head;
+    while(temp != NULL) {
+        sem_init(&(temp->data->mutex), 0, 1); // Initialize with value 1 (unlocked)
+        temp = temp->next;
     }
 }
 
+//change later
 void destroySemaphores(sem_t* roomSemaphore) {
     // Destroy the semaphores for each room
     for (int i = 0; i < ROOMS; i++) {
         sem_destroy(&roomSemaphore[i]);
     }
+}
+
+void checkGhost(HunterType* hunter){
+    if(hunter->room->ghost != NULL){
+            hunter->boredLevel = 0;
+            hunter->fearLevel++;
+        }
+    else{
+        hunter->boredLevel++;
+    }
+            printf("worked\n");
 }

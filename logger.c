@@ -39,6 +39,7 @@ void init_ghost(GhostType* ghost, RoomListType* rooms){
         temp = temp->next;  
     }
     ghost->room = temp->data;
+    ghost->room->ghost = ghost;
 
     switch(ghost->ghostType){
         case POLTERGEIST:
@@ -210,23 +211,22 @@ void ghostMove(GhostType* ghost){
 void ghostEvidence(GhostType* ghost){
     int choice = randInt(0, 3);
     EvidenceNodeType* newNode = (struct EvidenceNode*) malloc(sizeof(EvidenceNodeType));
-    sem_wait(&ghost->room->mutex);
+    sem_wait(&(ghost->room->mutex));
     EvidenceListType* evidenceList = ghost->room->evidence;
     newNode->data = ghost->evidence+choice;
-    newNode->next = NULL;
-
     if(evidenceList->head == NULL) {
         evidenceList->head = newNode;
+        newNode->prev = NULL;
     } else {
       EvidenceNodeType* currentNode = evidenceList->head;
       while(currentNode->next != NULL) {
         currentNode = currentNode->next;
       }
+      newNode->prev = currentNode;
       currentNode->next = newNode;
     }
     evidenceList->size++;
-
-    sem_post(&ghost->room->mutex);
+    sem_post(&(ghost->room->mutex));
     l_ghostEvidence(ghost->evidence[choice], ghost->room->name);
 }
 
@@ -294,9 +294,10 @@ void hunterMove(HunterType* hunter){
     for(int i=0; i<choice; i++){
         temp = temp->next;
     }
-    //potentially needs a sem_wait
+    sem_wait(&hunter->mutex);
     hunter->room->hunters->hunterList[hunter->id-1] = NULL;
     hunter->room = temp->data;
     hunter->room->hunters->hunterList[hunter->id-1] = hunter;
+    sem_post(&hunter->mutex);
     l_hunterMove(hunter->name, hunter->room->name);
 }

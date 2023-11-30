@@ -3,7 +3,7 @@
 
 int main()
 {
-    printf("line 1");
+    //printf("line 1");
     EvidenceType sharedEvidence[MAX_EVIDENCE];
     for(int i = 0; i < MAX_EVIDENCE; i++){
         sharedEvidence[i] = EV_UNKNOWN;
@@ -36,28 +36,27 @@ int main()
         // l_hunterMove(hunter->name, hunter->room->name);
         printf("Hunter %s is in %s and is ready to hunt\n", hunter->name, hunter->room->name);
     }
+   
     srand(time(NULL));
     GhostType ghost;  
-    // init_ghost(&ghost, house.rooms);
+    init_ghost(&ghost, house.rooms);
     // Define a semaphore for each room
-    // sem_t roomSemaphore[ROOMS];
-    // initSemaphores(roomSemaphore);
+    initSemaphores(house.rooms);
     
     printf("thread creation");
-    // sleep(5);
-    // pthread_t ghostThread;
-    // pthread_create(&ghostThread, NULL, ghostUpdate, &ghost);
+    //sleep(5);
+    pthread_t ghostThread;
+    pthread_create(&ghostThread, NULL, ghostUpdate, &ghost);
 
     
-    // pthread_t hunterThreads[4];
-    // for(int i = 0; i<4; i++){
-    //     pthread_create(&hunterThreads[i], NULL, hunterUpdate, &hunters->hunterList[i]);
-    // }  
-    
-    // for (int i = 0; i < 4; i++) {
-    //     pthread_join(hunterThreads[i], NULL);
-    // }
-    // pthread_join(ghostThread, NULL);
+    pthread_t hunterThreads[4];
+    for(int i = 0; i<4; i++){
+        pthread_create(&hunterThreads[i], NULL, hunterUpdate, &hunters->hunterList[i]);
+    }  
+    pthread_join(ghostThread, NULL);
+    for (int i = 0; i < 4; i++) {
+        pthread_join(hunterThreads[i], NULL);
+    }
     //might not work
 
 
@@ -65,30 +64,23 @@ int main()
 }
 
 void *hunterUpdate(void* args){
-    // ThreadDataType* threadData = (ThreadDataType*)data;
-
-    // HunterArrayType* hunters = threadData->hunters;
-    // GhostType* ghost = threadData->ghost;
     HunterType* hunter = args;   
-    // HouseType* house = threadData->house;
     int alive = C_TRUE;
     usleep(HUNTER_WAIT);
     while(alive){
-        if(hunter->room->ghost != NULL){
-            hunter->boredLevel = 0;
-            hunter->fearLevel++;
-        }
-        else{
-            hunter->boredLevel++;
-        }
+        sem_wait(&(hunter->room->mutex));
+        checkGhost(hunter);
+        sem_post(&(hunter->room->mutex));
         int choice = randInt(0, 3);
         switch (choice)
         {
             case 0:
-                hunterCollect(hunter);
+            printf("hunter collect\n");
+                //hunterCollect(hunter);
                 break;
             case 1:
-                hunterMove(hunter);
+            printf("hunter moves\n");
+                //hunterMove(hunter);
                 break;
             default:
                 hunterReview(hunter);
@@ -105,10 +97,7 @@ void *hunterUpdate(void* args){
             pthread_exit(NULL);
         }
     }
- 
     return NULL;
-
-
 }
 
 void *ghostUpdate(void* args){
@@ -119,8 +108,12 @@ void *ghostUpdate(void* args){
     //HunterArrayType* hunters = ((ThreadDataType*)data)->hunters;
     while(haunting){
         usleep(GHOST_WAIT);
+        // if(ghost->room->ghost == NULL){
+        //     printf("test");
+        // }
         for(int i = 0; i<4; i++){
-            if (ghost->room == ghost->room->hunters->hunterList[i]->room) {
+            if (ghost->room->hunters->hunterList[i] != NULL) {
+  
                 ghost->boredomLevel = 0;
                 found = C_TRUE;
                 break;
@@ -132,7 +125,6 @@ void *ghostUpdate(void* args){
                 l_ghostExit(LOG_BORED);
                 pthread_exit(NULL);
             }
-
         }
         int choice = randInt(0, 3);
         switch (choice)
@@ -152,5 +144,3 @@ void *ghostUpdate(void* args){
     return NULL;
       
 }
-
-

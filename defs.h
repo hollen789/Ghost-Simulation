@@ -73,8 +73,9 @@ void ghostEvidence(GhostType*);
 void hunterCollect(HunterType*);
 void hunterReview(HunterType*);
 void hunterMove(HunterType*);
-void initializeSemaphores(sem_t* roomSemaphore)
-void destroySemaphores(sem_t* roomSemaphore);
+void initSemaphores(RoomListType*);
+void destroySemaphores(sem_t*);
+void checkGhost(HunterType*);
 
 // classes
 struct Room {
@@ -135,12 +136,3 @@ struct House {
   HunterArrayType* hunters;
   EvidenceType* evidence[MAX_EVIDENCE];
 } ;
-
-typedef struct ThreadData{
-  GhostType* ghost;
-  HunterArrayType* hunters;
-  HunterType* hunter;
-  HouseType* house;
-  int type;
-  // RoomListType* rooms;
-} ThreadDataType;
