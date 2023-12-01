@@ -116,7 +116,7 @@ void initHouse(HouseType* house,EvidenceType* evidence){
     // for(int i = 0; i < MAX_EVIDENCE; i++){
     //     house->evidence[i] = NULL;
     // }
-    (*house->evidence) = evidence;
+    (*house->evidenceLog) = evidence;
    
     house->rooms = malloc(sizeof(RoomListType));
     house->rooms->head = NULL;

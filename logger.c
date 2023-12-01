@@ -2,8 +2,8 @@
 
 /* 
     Logs the hunter being created.
-    in: hunter - the hunter name to log
-    in: equipment - the hunter's equipment
+        in: hunter - the hunter name to log
+        in: equipment - the hunter's equipment
 */
 void l_hunterInit(char* hunter, enum EvidenceType equipment) {
     if (!LOGGING) return;
@@ -16,19 +16,26 @@ void l_hunterInit(char* hunter, enum EvidenceType equipment) {
 
 /* 
     inits hunter values
-    in: hunter - the hunter name to log
-    in: equipment - the hunter's equipment
+        in: name - the hunter name to log
+        in: equipment - the hunter's equipment
+        in/out: hunter - the hunter that will be initilized
+        in: evidence - the evidenceLog that will be shared among other hunters and the house
 */
 void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, EvidenceType* evidence) {
     strcpy(hunter->name , name);
     hunter->equipment = equipment;
     hunter->fearLevel = 0;
     hunter->boredLevel = 0;
-    (*hunter->evidence) = evidence;
+    (*hunter->evidenceLog) = evidence;
     sem_init(&hunter->mutex, 0, 1);
     //hunter->room = house.rooms->head->data;
 }
 
+/* 
+    inits ghost values
+        in/out: ghost - the ghost to be initialized
+        in: rooms - the list of rooms that will contain one of the randomly chosen room for the ghost
+*/
 void init_ghost(GhostType* ghost, RoomListType* rooms){
     //printf("entering init ghost");
     ghost->ghostType = randomGhost();
@@ -72,8 +79,8 @@ void init_ghost(GhostType* ghost, RoomListType* rooms){
 
 /*
     Logs the hunter moving into a new room.
-    in: hunter - the hunter name to log
-    in: room - the room name to log
+        in: hunter - the hunter name to log
+        in: room - the room name to log
 */
 void l_hunterMove(char* hunter, char* room) {
     if (!LOGGING) return;
@@ -82,8 +89,8 @@ void l_hunterMove(char* hunter, char* room) {
 
 /*
     Logs the hunter exiting the house.
-    in: hunter - the hunter name to log
-    in: reason - the reason for exiting, either LOG_FEAR, LOG_BORED, or LOG_EVIDENCE
+        in: hunter - the hunter name to log
+        in: reason - the reason for exiting, either LOG_FEAR, LOG_BORED, or LOG_EVIDENCE
 */
 void l_hunterExit(char* hunter, enum LoggerDetails reason) {
     if (!LOGGING) return;
@@ -105,8 +112,8 @@ void l_hunterExit(char* hunter, enum LoggerDetails reason) {
 
 /*
     Logs the hunter reviewing evidence.
-    in: hunter - the hunter name to log
-    in: result - the result of the review, either LOG_SUFFICIENT or LOG_INSUFFICIENT
+        in: hunter - the hunter name to log
+        in: result - the result of the review, either LOG_SUFFICIENT or LOG_INSUFFICIENT
 */
 void l_hunterReview(char* hunter, enum LoggerDetails result) {
     if (!LOGGING) return;
@@ -125,9 +132,9 @@ void l_hunterReview(char* hunter, enum LoggerDetails result) {
 
 /*
     Logs the hunter collecting evidence.
-    in: hunter - the hunter name to log
-    in: evidence - the evidence type to log
-    in: room - the room name to log
+        in: hunter - the hunter name to log
+        in: evidence - the evidence type to log
+        in: room - the room name to log
 */
 void l_hunterCollect(char* hunter, enum EvidenceType evidence, char* room) {
     if (!LOGGING) return;
@@ -138,7 +145,7 @@ void l_hunterCollect(char* hunter, enum EvidenceType evidence, char* room) {
 
 /*
     Logs the ghost moving into a new room.
-    in: room - the room name to log
+        in: room - the room name to log
 */
 void l_ghostMove(char* room) {
     if (!LOGGING) return;
@@ -147,7 +154,7 @@ void l_ghostMove(char* room) {
 
 /*
     Logs the ghost exiting the house.
-    in: reason - the reason for exiting, either LOG_FEAR, LOG_BORED, or LOG_EVIDENCE
+        in: reason - the reason for exiting, either LOG_FEAR, LOG_BORED, or LOG_EVIDENCE
 */
 void l_ghostExit(enum LoggerDetails reason) {
     if (!LOGGING) return;
@@ -169,8 +176,8 @@ void l_ghostExit(enum LoggerDetails reason) {
 
 /*
     Logs the ghost leaving evidence in a room.
-    in: evidence - the evidence type to log
-    in: room - the room name to log
+        in: evidence - the evidence type to log
+        in: room - the room name to log
 */
 void l_ghostEvidence(enum EvidenceType evidence, char* room) {
     if (!LOGGING) return;
@@ -181,8 +188,8 @@ void l_ghostEvidence(enum EvidenceType evidence, char* room) {
 
 /*
     Logs the ghost being created.
-    in: ghost - the ghost type to log
-    in: room - the room name that the ghost is starting in
+        in: ghost - the ghost type to log
+        in: room - the room name that the ghost is starting in
 */
 void l_ghostInit(enum GhostClass ghost, char* room) {
     if (!LOGGING) return;
@@ -190,7 +197,10 @@ void l_ghostInit(enum GhostClass ghost, char* room) {
     ghostToString(ghost, ghost_str);
     printf("[GHOST INIT] Ghost is a [%s] in room [%s]\n", ghost_str, room);
 }
-
+/*
+    Moves the ghost to a random adjacent room
+        in/out: ghost - will change it's room attribute
+*/
 void ghostMove(GhostType* ghost){
     int choice = randInt(0, ghost->room->connectedTo->size);
     RoomNodeType* temp = ghost->room->connectedTo->head;
@@ -207,7 +217,10 @@ void ghostMove(GhostType* ghost){
 
     l_ghostMove(ghost->room->name);
 }
-
+/*
+    makes the ghost leave one of it's random evidences in its current room
+        in: ghost - the ghost that will leave one of it's evidence randomly 
+*/
 void ghostEvidence(GhostType* ghost){
     int choice = randInt(0, 3);
     EvidenceNodeType* newNode = (struct EvidenceNode*) malloc(sizeof(EvidenceNodeType));
@@ -229,12 +242,15 @@ void ghostEvidence(GhostType* ghost){
     sem_post(&(ghost->room->mutex));
     l_ghostEvidence(ghost->evidence[choice], ghost->room->name);
 }
-
+/*
+    makes hunter check if the current room contains an evidence that can be collected by said hunter, if so remove it and place it in their evidenceLog
+        in: hunter - the hunter that will attempt to collect evidence
+*/
 void hunterCollect(HunterType* hunter) {
     EvidenceType canCollect = hunter->equipment;
     int alreadyCollected = C_FALSE;
     for (int i = 0; i < MAX_EVIDENCE; i++) {
-        if (hunter->evidence[i]!=NULL && (*hunter->evidence[i]) == canCollect) {
+        if (hunter->evidenceLog[i]!=NULL && (*hunter->evidenceLog[i]) == canCollect) {
             alreadyCollected = C_TRUE;
             break;
         }
@@ -265,18 +281,22 @@ void hunterCollect(HunterType* hunter) {
     sem_wait(&hunter->mutex);
     if (alreadyCollected == C_FALSE) {
         int i = 0;
-        while (hunter->evidence[i] != NULL) {
+        while (hunter->evidenceLog[i] != NULL) {
             i++;
         }
-        hunter->evidence[i] = evidence;
+        hunter->evidenceLog[i] = evidence;
     }
     sem_post(&hunter->mutex);
 
     l_hunterCollect(hunter->name, hunter->equipment, hunter->room->name);
 }
-
+/*
+    makes hunter check if there is sufficient evidence in evidenceLog so the ghost can be identified
+        in: hunter - the hunter that will review collected evidences
+        out: potentially confirmation that sufficient evidence has been collected
+*/
 void hunterReview(HunterType* hunter){
-    if(hunter->evidence[MAX_EVIDENCE-1]!=NULL){
+    if(hunter->evidenceLog[MAX_EVIDENCE-1]!=NULL){
         l_hunterReview(hunter->name, LOG_SUFFICIENT);
         
         // ghostToString(ghost->ghostType,name);
@@ -287,7 +307,10 @@ void hunterReview(HunterType* hunter){
         l_hunterReview(hunter->name, LOG_INSUFFICIENT);
     }
 }
-
+/*
+    makes hunter move to an adjacent room
+        in: hunter - the hunter that will change it's room attribute
+*/
 void hunterMove(HunterType* hunter){
     int choice = randInt(0, hunter->room->connectedTo->size);
     RoomNodeType* temp = hunter->room->connectedTo->head;

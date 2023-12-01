@@ -122,7 +122,7 @@ struct Hunter {
   char    name[MAX_STR];
   int     fearLevel;
   int     boredLevel;
-  EvidenceType* evidence[MAX_EVIDENCE];
+  EvidenceType* evidenceLog[MAX_EVIDENCE];
   sem_t   mutex;
   RoomType* room;
 };
@@ -134,5 +134,5 @@ struct HunterArray {
 struct House {
   RoomListType* rooms;
   HunterArrayType* hunters;
-  EvidenceType* evidence[MAX_EVIDENCE];
+  EvidenceType* evidenceLog[MAX_EVIDENCE];
 } ;
