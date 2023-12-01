@@ -87,6 +87,10 @@ void ghostToString(enum GhostClass ghost, char* buffer) {
         
     }
 }
+/*
+    helper method to initialize semaphores
+        in/out: roomSemaphore - semaphore array that will have its semaphores intitialized
+*/
 void initSemaphores(RoomListType* roomSemaphore) {
     // Initialize the semaphores for each room
     RoomNodeType* temp = roomSemaphore->head;
@@ -96,14 +100,20 @@ void initSemaphores(RoomListType* roomSemaphore) {
     }
 }
 
-//change later
+/*
+    helper method to destroy semaphores
+        in/out: roomSemaphore - semaphore array that will have its contents destroyed
+*/
 void destroySemaphores(sem_t* roomSemaphore) {
     // Destroy the semaphores for each room
     for (int i = 0; i < ROOMS; i++) {
         sem_destroy(&roomSemaphore[i]);
     }
 }
-
+/*
+    helper method for hunters to check if they are in the same room as ghost
+        in/out: hunter - will change it's boredom/fear level depending on existence of ghost
+*/
 void checkGhost(HunterType* hunter){
     if(hunter->room->ghost != NULL){
             hunter->boredLevel = 0;
@@ -112,5 +122,4 @@ void checkGhost(HunterType* hunter){
     else{
         hunter->boredLevel++;
     }
-            printf("worked\n");
 }

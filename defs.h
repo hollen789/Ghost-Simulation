@@ -20,8 +20,6 @@
 #define MAX_EVIDENCE    3
 #define ROOMS           30
 #define HUNTERS         4
-#define HUNTER          1 
-#define GHOST           0
 
 typedef enum EvidenceType EvidenceType;
 typedef enum GhostClass GhostClass;
@@ -122,7 +120,7 @@ struct Hunter {
   char    name[MAX_STR];
   int     fearLevel;
   int     boredLevel;
-  EvidenceType* evidence[MAX_EVIDENCE];
+  EvidenceType* evidenceLog[MAX_EVIDENCE];
   sem_t   mutex;
   RoomType* room;
 };
@@ -134,5 +132,5 @@ struct HunterArray {
 struct House {
   RoomListType* rooms;
   HunterArrayType* hunters;
-  EvidenceType* evidence[MAX_EVIDENCE];
+  EvidenceType* evidenceLog[MAX_EVIDENCE];
 } ;

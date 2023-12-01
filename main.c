@@ -3,6 +3,7 @@
 
 int main()
 {
+    //INTIALIZING ALL OBJECTS
     //printf("line 1");
     EvidenceType sharedEvidence[MAX_EVIDENCE];
     for(int i = 0; i < MAX_EVIDENCE; i++){
@@ -36,7 +37,7 @@ int main()
         // l_hunterMove(hunter->name, hunter->room->name);
         printf("Hunter %s is in %s and is ready to hunt\n", hunter->name, hunter->room->name);
     }
-   
+    //RUNNING SIMULATION
     srand(time(NULL));
     GhostType ghost;  
     init_ghost(&ghost, house.rooms);
@@ -49,26 +50,27 @@ int main()
     pthread_create(&ghostThread, NULL, ghostUpdate, &ghost);
 
     
-    pthread_t hunterThreads[4];
-    for(int i = 0; i<4; i++){
+    pthread_t hunterThreads[HUNTERS];
+    for(int i = 0; i<HUNTERS; i++){
         pthread_create(&hunterThreads[i], NULL, hunterUpdate, hunters->hunterList[i]);
     }  
     pthread_join(ghostThread, NULL);
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < HUNTERS; i++) {
         pthread_join(hunterThreads[i], NULL);
     }
-    //might not work
-
+    //FINALIZE PROCESS
 
     return 0;
 }
-
+/* 
+    function to be run by hunter threads dictating the actions of each individual hunter.
+        in: args - the hunter that will be simulated
+*/
 void *hunterUpdate(void* args){
     HunterType* hunter = args;   
     int alive = C_TRUE;
-    usleep(HUNTER_WAIT);
     while(alive){
-        printf("test");
+        usleep(HUNTER_WAIT);
         sem_wait(&(hunter->room->mutex));
         checkGhost(hunter);
         sem_post(&(hunter->room->mutex));
@@ -76,12 +78,12 @@ void *hunterUpdate(void* args){
         switch (choice)
         {
             case 0:
-            printf("hunter collect\n");
-                //hunterCollect(hunter);
+                //potential seg problem:
+                hunterCollect(hunter);
                 break;
             case 1:
-            printf("hunter moves\n");
-                //hunterMove(hunter);
+                //potential seg problem:
+                hunterMove(hunter);
                 break;
             default:
                 hunterReview(hunter);
@@ -100,7 +102,10 @@ void *hunterUpdate(void* args){
     }
     return NULL;
 }
-
+/* 
+    function to be run by the ghost thread dictating the actions of the ghost.
+        in: args - the ghost that will be simulated
+*/
 void *ghostUpdate(void* args){
     int haunting = C_TRUE;
     int found = C_FALSE;
