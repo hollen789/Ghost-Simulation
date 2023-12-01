@@ -109,8 +109,8 @@ void addRoom(RoomListType** roomList, RoomType* room){
 }
 /*
     initalize house values
-        in:         room to be added to house
-        in/out:     house that will add said room
+        in/out:  house - house to be initialized
+        in: evidence - evidenceLog to be placed in house's evidence's log
 */
 void initHouse(HouseType* house,EvidenceType* evidence){
     // for(int i = 0; i < MAX_EVIDENCE; i++){
