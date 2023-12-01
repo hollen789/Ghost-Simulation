@@ -1,4 +1,4 @@
-# make and build files
+# make and build files, for commiting purposes
 *.o
 ghostTest
 .vscode/*
