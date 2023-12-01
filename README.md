@@ -35,4 +35,4 @@ when program begins, the user will be prompted to enter the names of 4 hunters. 
 
 Usage of Generative AI:
 
-*No Generative AI assistance/code were used in the making of this program, the Makefile is entirely original and has not been copied from any other sources.
+Co-pilot has been used to create psuedo-code of certain functions that we built off of and for debugging purposes
