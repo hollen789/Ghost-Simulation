@@ -20,8 +20,6 @@
 #define MAX_EVIDENCE    3
 #define ROOMS           30
 #define HUNTERS         4
-#define HUNTER          1 
-#define GHOST           0
 
 typedef enum EvidenceType EvidenceType;
 typedef enum GhostClass GhostClass;

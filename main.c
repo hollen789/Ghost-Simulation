@@ -3,6 +3,7 @@
 
 int main()
 {
+    //INTIALIZING ALL OBJECTS
     //printf("line 1");
     EvidenceType sharedEvidence[MAX_EVIDENCE];
     for(int i = 0; i < MAX_EVIDENCE; i++){
@@ -36,7 +37,7 @@ int main()
         // l_hunterMove(hunter->name, hunter->room->name);
         printf("Hunter %s is in %s and is ready to hunt\n", hunter->name, hunter->room->name);
     }
-   
+    //RUNNING SIMULATION
     srand(time(NULL));
     GhostType ghost;  
     init_ghost(&ghost, house.rooms);
@@ -57,12 +58,14 @@ int main()
     for (int i = 0; i < HUNTERS; i++) {
         pthread_join(hunterThreads[i], NULL);
     }
-    //might not work
-
+    //FINALIZE PROCESS
 
     return 0;
 }
-
+/* 
+    function to be run by hunter threads dictating the actions of each individual hunter.
+        in: args - the hunter that will be simulated
+*/
 void *hunterUpdate(void* args){
     HunterType* hunter = args;   
     int alive = C_TRUE;
@@ -99,7 +102,10 @@ void *hunterUpdate(void* args){
     }
     return NULL;
 }
-
+/* 
+    function to be run by the ghost thread dictating the actions of the ghost.
+        in: args - the ghost that will be simulated
+*/
 void *ghostUpdate(void* args){
     int haunting = C_TRUE;
     int found = C_FALSE;
