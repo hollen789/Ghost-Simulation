@@ -77,7 +77,7 @@ void connectRooms(RoomType* room1, RoomType* room2){
 }
 /*
     adds room to house
-        in:         room to be added to house
+        in:   roomList - 
         in/out:     house that will add said room
 */
 void addRoom(RoomListType** roomList, RoomType* room){
