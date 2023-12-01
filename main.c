@@ -37,6 +37,12 @@ int main()
         // l_hunterMove(hunter->name, hunter->room->name);
         printf("Hunter %s is in %s and is ready to hunt\n", hunter->name, hunter->room->name);
     }
+    RoomNodeType* temp = house.rooms->head->data->connectedTo->head;
+
+    for(int i = 0; i < house.rooms->head->data->connectedTo->size; i++){
+        printf("%s\n", temp->data->name);
+        temp = temp->next;
+    }
     //RUNNING SIMULATION
     srand(time(NULL));
     GhostType ghost;  
@@ -44,7 +50,7 @@ int main()
     // Define a semaphore for each room
     initSemaphores(house.rooms);
     
-    printf("thread creation");
+    // printf("thread creation");
     //sleep(5);
     pthread_t ghostThread;
     pthread_create(&ghostThread, NULL, ghostUpdate, &ghost);
@@ -71,10 +77,11 @@ void *hunterUpdate(void* args){
     int alive = C_TRUE;
     while(alive){
         usleep(HUNTER_WAIT);
-        sem_wait(&(hunter->room->mutex));
+        // sem_wait(&(hunter->room->mutex));
         checkGhost(hunter);
-        sem_post(&(hunter->room->mutex));
+        // sem_post(&(hunter->room->mutex));
         int choice = randInt(0, 3);
+        printf("Hunter %s choice is %d\n", hunter->name, choice);
         switch (choice)
         {
             case 0:
@@ -117,7 +124,9 @@ void *ghostUpdate(void* args){
         // if(ghost->room->ghost == NULL){
         //     printf("test");
         // }
+        sem_wait(&ghost->room->mutex);
         for(int i = 0; i<4; i++){
+            
             if (ghost->room->hunters->hunterList[i] != NULL) {
   
                 ghost->boredomLevel = 0;
@@ -125,6 +134,8 @@ void *ghostUpdate(void* args){
                 break;
             }
         }
+        sem_post(&ghost->room->mutex);
+
         if(found == C_FALSE){
             ghost->boredomLevel++;
             if(ghost->boredomLevel == BOREDOM_MAX){
@@ -146,6 +157,7 @@ void *ghostUpdate(void* args){
             printf("Ghost is waiting\n");
             break;
         }
+        printf("end of ghost loop\n");
     }
     return NULL;
       

@@ -65,6 +65,7 @@ RoomType* createRoom(char *name){
     room->connectedTo = malloc(sizeof(RoomListType));
     room->connectedTo->head = NULL;
     room->connectedTo->tail = NULL;
+    room->evidence = malloc(sizeof(EvidenceListType));
     return room;
 }
 /*

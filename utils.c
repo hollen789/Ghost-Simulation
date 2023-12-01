@@ -115,6 +115,7 @@ void destroySemaphores(sem_t* roomSemaphore) {
         in/out: hunter - will change it's boredom/fear level depending on existence of ghost
 */
 void checkGhost(HunterType* hunter){
+    sem_wait(&hunter->room->mutex);
     if(hunter->room->ghost != NULL){
             hunter->boredLevel = 0;
             hunter->fearLevel++;
@@ -122,4 +123,5 @@ void checkGhost(HunterType* hunter){
     else{
         hunter->boredLevel++;
     }
+    sem_post(&hunter->room->mutex);
 }
