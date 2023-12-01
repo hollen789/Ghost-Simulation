@@ -51,7 +51,7 @@ int main()
     
     pthread_t hunterThreads[4];
     for(int i = 0; i<4; i++){
-        pthread_create(&hunterThreads[i], NULL, hunterUpdate, &hunters->hunterList[i]);
+        pthread_create(&hunterThreads[i], NULL, hunterUpdate, hunters->hunterList[i]);
     }  
     pthread_join(ghostThread, NULL);
     for (int i = 0; i < 4; i++) {
