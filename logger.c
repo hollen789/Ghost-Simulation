@@ -21,12 +21,12 @@ void l_hunterInit(char* hunter, enum EvidenceType equipment) {
         in/out: hunter - the hunter that will be initilized
         in: evidence - the evidenceLog that will be shared among other hunters and the house
 */
-void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, EvidenceType* evidence) {
+void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, EvidenceListType* evidence) {
     strcpy(hunter->name , name);
     hunter->equipment = equipment;
     hunter->fearLevel = 0;
     hunter->boredLevel = 0;
-    (*hunter->evidenceLog) = evidence;
+    hunter->sharedEvidence = evidence;
     sem_init(&hunter->mutex, 0, 1);
     //hunter->room = house.rooms->head->data;
 }
@@ -256,18 +256,21 @@ void hunterCollect(HunterType* hunter) {
     EvidenceType canCollect = hunter->equipment;
     int alreadyCollected = C_FALSE;
     int somethingToCollect = C_FALSE;
-    for (int i = 0; i < MAX_EVIDENCE; i++) {
-        if (hunter->evidenceLog[i]!=NULL && (*hunter->evidenceLog[i]) == canCollect) {
+    EvidenceNodeType* check = hunter->sharedEvidence->head;
+    while(check != NULL) {
+        if (check !=NULL && (*check->data) == canCollect) {
             alreadyCollected = C_TRUE;
             break;
         }
+        check = check->next;
     } 
+
     sem_wait(&hunter->room->mutex);
     EvidenceNodeType* temp = hunter->room->evidence->head;
-    EvidenceType* evidence = NULL;
+    // EvidenceType* evidence = NULL;
     while (temp != NULL) {
         if ((*temp->data) == canCollect) {
-            evidence = temp->data;
+            // evidence = temp->data;
             somethingToCollect=C_TRUE;
             // Remove node from list
             if (temp->prev != NULL) {
@@ -289,11 +292,22 @@ void hunterCollect(HunterType* hunter) {
     sem_wait(&hunter->mutex);
     if (alreadyCollected == C_FALSE && somethingToCollect == C_TRUE) {
         printf("Hunter is adding evidence to array");
-        int i = 0;
-        while (hunter->evidenceLog[i] != NULL) {
-            i++;
+        
+        EvidenceNodeType* newEvidence = (struct EvidenceNode*) malloc(sizeof(EvidenceNodeType));
+        hunter->sharedEvidence->size++;
+        if(hunter->sharedEvidence->head ==NULL){
+            hunter->sharedEvidence->head = newEvidence;
+            newEvidence->prev = NULL;
+        }else{
+            hunter->sharedEvidence->head->prev = newEvidence;
+            hunter->sharedEvidence->head = newEvidence;
         }
-        hunter->evidenceLog[i] = evidence;
+        
+
+        // while ((*hunter->evidenceLog[i]) != EV_UNKNOWN) {
+        //     i++;
+        // }
+        // hunter->evidenceLog[i] = evidence;
         l_hunterCollect(hunter->name, hunter->equipment, hunter->room->name);
     }
     sem_post(&hunter->mutex);
@@ -303,6 +317,15 @@ void hunterCollect(HunterType* hunter) {
     else{
         printf("Hunter %s already collected this evidence\n",hunter->name);
     }
+    EvidenceNodeType* look = hunter->sharedEvidence->head;
+    while(look!=NULL){
+        if(look != NULL){
+            char ev_str[MAX_STR];
+            evidenceToString(*look->data, ev_str);
+            printf("Hunter %s has evidence: %s\n",hunter->name,ev_str);
+            look = look->next;
+        }
+    }
 
 }
 /*
@@ -311,13 +334,11 @@ void hunterCollect(HunterType* hunter) {
         out: potentially confirmation that sufficient evidence has been collected
 */
 void hunterReview(HunterType* hunter){
-    if(hunter->evidenceLog[MAX_EVIDENCE-1]!=NULL){
+    if(hunter->sharedEvidence->size == MAX_EVIDENCE){
         l_hunterReview(hunter->name, LOG_SUFFICIENT);
-        // ghostToString(ghost->ghostType,name);
-        // printf("Ghost has been found. It was a %s\n",name);
         pthread_exit(NULL);
-    }
-    else{
+        
+    }else{
         l_hunterReview(hunter->name, LOG_INSUFFICIENT);
     }
 }

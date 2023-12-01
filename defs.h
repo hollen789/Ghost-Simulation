@@ -56,13 +56,13 @@ void l_ghostMove(char* room);
 void l_ghostEvidence(enum EvidenceType evidence, char* room);
 void l_ghostExit(enum LoggerDetails reason);
 //new declarations
-void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, EvidenceType* evidence); 
+void hunterInit(char*, enum EvidenceType, HunterType*, EvidenceListType*); 
 RoomType* createRoom(char*);
 void connectRooms(RoomType*, RoomType*);
 void addRoom(RoomListType**, RoomType*);
 int appendRoom(RoomListType*, RoomType*); 
 void populateRooms(HouseType*);
-void initHouse(HouseType*, EvidenceType*);
+void initHouse(HouseType*, EvidenceListType*);
 void init_ghost(GhostType*, RoomListType*);
 void* ghostUpdate(void*);
 void* hunterUpdate(void*);
@@ -120,7 +120,8 @@ struct Hunter {
   char    name[MAX_STR];
   int     fearLevel;
   int     boredLevel;
-  EvidenceType* evidenceLog[MAX_EVIDENCE];
+  // EvidenceType* evidenceLog[MAX_EVIDENCE];
+  EvidenceListType* sharedEvidence;
   sem_t   mutex;
   RoomType* room;
 };
@@ -132,5 +133,6 @@ struct HunterArray {
 struct House {
   RoomListType* rooms;
   HunterArrayType* hunters;
-  EvidenceType* evidenceLog[MAX_EVIDENCE];
+  // EvidenceType* evidenceLog[MAX_EVIDENCE];
+  EvidenceListType* sharedEvidence;
 } ;

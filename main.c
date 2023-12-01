@@ -5,13 +5,15 @@ int main()
 {
     //INTIALIZING ALL OBJECTS
     //printf("line 1");
-    EvidenceType sharedEvidence[MAX_EVIDENCE];
-    for(int i = 0; i < MAX_EVIDENCE; i++){
-        sharedEvidence[i] = EV_UNKNOWN;
-    }
+    // EvidenceType sharedEvidence[MAX_EVIDENCE];
+    // for(int i = 0; i < MAX_EVIDENCE; i++){
+    //     sharedEvidence[i] = EV_UNKNOWN;
+    // }
+    EvidenceListType* evidenceList = (struct EvidenceList*) malloc(sizeof(EvidenceListType));
+
     HouseType house;
     // printf("line 1");
-    initHouse(&house, sharedEvidence);
+    initHouse(&house, evidenceList);
     // printf("line 2");
     populateRooms(&house);
     // NodeType* temp = house.rooms->head;
@@ -27,7 +29,7 @@ int main()
         HunterType* hunter = (struct Hunter*) malloc(sizeof(HunterType));
         printf("Please enter Hunter %d: ", i+1);
         scanf("%s", input);
-        hunterInit(input, i, hunter, sharedEvidence);
+        hunterInit(input, i, hunter, evidenceList);
         hunter->id = i;
         l_hunterInit(input, i);
         // printf("line 16");
