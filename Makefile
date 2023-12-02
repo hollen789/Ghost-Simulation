@@ -11,6 +11,10 @@ main: 	main.c defs.h
 		gcc ${OBJECTS} -c main.c  
 utils:	utils.c defs.h
 		gcc ${OBJECTS} -c utils.c  
+ghost: ghost.c defs.h
+		gcc ${OBJECTS} -c ghost.c
+hunter: hunter.c defs.h
+		gcc ${OBJECTS} -c hunter.c
 clean:
 		rm -f ${TARGETS} ghostTest
 
