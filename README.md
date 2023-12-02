@@ -15,6 +15,8 @@ List of Files included in Program and their purposes:
 - main.c: contains code related to user input and runs the entire program
 - logger.c: contains code related to logging all the movements of the ghost and the hunters.
 - house.c: contains code related to house related functions
+- ghost.c: contains all code related to ghost actions and initalization
+- hunter.c: contains all code related to hunter actions and initalization
 - utils.c: contains code that provides utility functions that are used in the Ghost Simulation program
 - defs.h: contains definition of constant variables and interfaces for functions in c files
 - Makefile: contains defined compilation commands that can be used when compiling the files
