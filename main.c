@@ -20,8 +20,15 @@ int main()
         scanf("%s", input);
         printf("Please enter their equipment[EMF(0), TEMPERATURE(1), FINGERPRINTS(2), SOUND(3), RANDOM(OTHER)]: ");
         scanf("%d", &equipmentInput);
-        while(equipmentInput != "\n");
+        
+        //while(equipmentInput != "\n");
         hunterInit(input, equipmentInput, hunter, sharedEvidence);
+        
+        int c=getchar();
+        while (c != '\n' && c != EOF) {
+            c = getchar();
+            // Consume characters until newline or end of file incase of input using letters not numbers
+        }
         hunter->id = i;
         l_hunterInit(input, hunter->equipment);
         hunters->hunterList[i] = hunter;
