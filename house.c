@@ -113,11 +113,11 @@ void addRoom(RoomListType** roomList, RoomType* room){
         in/out:  house - house to be initialized
         in: evidence - evidenceLog to be placed in house's evidence's log
 */
-void initHouse(HouseType* house,EvidenceListType* evidence){
+void initHouse(HouseType* house,EvidenceType* evidence){
     // for(int i = 0; i < MAX_EVIDENCE; i++){
     //     house->evidence[i] = NULL;
     // }
-    house->sharedEvidence = evidence;
+    (*house->evidenceLog) = evidence;
    
     house->rooms = malloc(sizeof(RoomListType));
     house->rooms->head = NULL;
