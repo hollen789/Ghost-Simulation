@@ -36,7 +36,7 @@ void init_ghost(GhostType* ghost, RoomListType* rooms){
             ghost->evidence[1] = FINGERPRINTS;
             ghost->evidence[2] = SOUND;
             break;
-        default:
+        default://WRONG CASE
             ghost->evidence[0] = EV_UNKNOWN;
             ghost->evidence[1] = EV_UNKNOWN;
             ghost->evidence[2] = EV_UNKNOWN;

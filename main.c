@@ -26,7 +26,6 @@ int main()
         printf("Please enter their equipment[EMF(0), TEMPERATURE(1), FINGERPRINTS(2), SOUND(3), RANDOM(OTHER)]: ");
         scanf("%d", &equipmentInput);
         
-        //while(equipmentInput != "\n");
         hunterInit(input, equipmentInput, hunter, sharedEvidence);
         
         int c=getchar();
@@ -38,7 +37,6 @@ int main()
         l_hunterInit(input, hunter->equipment);
         hunters->hunterList[i] = hunter;
         hunter->room = house.rooms->head->data;
-        // printf("Hunter %s is in %s and is ready to hunt\n", hunter->name, hunter->room->name);
     }
     printf("\nALL HUNTERS ARE IN THE VAN AND READY TO HUNT\n");
     printf("--------------------------------------------------------------\n");

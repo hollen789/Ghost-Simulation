@@ -9,7 +9,6 @@ void l_hunterInit(char* hunter, enum EvidenceType equipment) {
     if (!LOGGING) return;
     char ev_str[MAX_STR];
     evidenceToString(equipment, ev_str);
-    // printf(ev_str, MAX_STR);
     printf("[HUNTER INIT] [%s] is a [%s] hunter\n", hunter, ev_str); 
 }
 /*
@@ -132,7 +131,11 @@ void l_ghostInit(enum GhostClass ghost, char* room) {
     ghostToString(ghost, ghost_str);
     printf("%-18s|%s[%s]%s[%s]\n","[GHOST INIT]", "Ghost is a ", ghost_str," in room ",room);
 }
-
+/*
+    Logs the hunter switching equipment
+        in: hunter - the hunter's name
+        in: equipment - hunter's equipment it has changed to
+*/
 void l_hunterSwitch(char* hunter, EvidenceType equipment){
     if (!LOGGING) return;
     char c[MAX_STR];
