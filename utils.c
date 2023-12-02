@@ -101,16 +101,6 @@ void initSemaphores(RoomListType* roomSemaphore) {
 }
 
 /*
-    helper method to destroy semaphores
-        in/out: roomSemaphore - semaphore array that will have its contents destroyed
-*/
-void destroySemaphores(sem_t* roomSemaphore) {
-    // Destroy the semaphores for each room
-    for (int i = 0; i < ROOMS; i++) {
-        sem_destroy(&roomSemaphore[i]);
-    }
-}
-/*
     helper method for hunters to check if they are in the same room as ghost
         in/out: hunter - will change it's boredom/fear level depending on existence of ghost
 */
@@ -125,7 +115,10 @@ void checkGhost(HunterType* hunter){
     }
     sem_post(&hunter->room->mutex);
 }
-
+/*
+    helper method to destroy semaphores
+        in/out: roomSemaphore - semaphore array that will have its contents destroyed
+*/
 void destroyRoomSemaphores(RoomListType* roomSemaphore) {
     // Destroy the semaphores for each room
     RoomNodeType* temp = roomSemaphore->head;
@@ -134,13 +127,15 @@ void destroyRoomSemaphores(RoomListType* roomSemaphore) {
         temp = temp->next;
     }
 }
-
+/*
+    frees up memory for whole simulation
+        in: house - house to have it's allocated memory cleaned
+*/
 void cleanUpHouse(HouseType house) {
     RoomListType* rooms = house.rooms;
     RoomNodeType* temp = rooms->head;
     HunterArrayType* hunters = house.hunters;
     while(temp != NULL) {
-        
         //free the evidence list nodes then the list itself
         if (temp->data->evidence != NULL) {
             EvidenceNodeType* current = temp->data->evidence->head;
@@ -151,8 +146,6 @@ void cleanUpHouse(HouseType house) {
             }
         }
         free(temp->data->evidence);
-        // temp->data->evidence = NULL;
-
         //free the connectedTo list nodes then the list itself
         RoomNodeType* current = temp->data->connectedTo->head;
         while (current != NULL) {
@@ -167,9 +160,6 @@ void cleanUpHouse(HouseType house) {
         free(temp); 
         temp = next;
         next = NULL;
-
-        
-
     }
     free(hunters);
     free(rooms);

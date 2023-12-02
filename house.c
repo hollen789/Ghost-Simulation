@@ -56,7 +56,7 @@ void populateRooms(HouseType* house) {
 }
 /*
     creates room
-        out:   name of room 
+        in:   name of room to be initialized
 */
 RoomType* createRoom(char *name){
     RoomType* room = malloc(sizeof(RoomType));
@@ -89,10 +89,7 @@ void connectRooms(RoomType* room1, RoomType* room2){
         in:  room - room to be added to list
 */
 void addRoom(RoomListType** roomList, RoomType* room){
-    // printf("%s",room);
-    // printf("%s",room->name);
     RoomNodeType* newNode = (struct RoomNode*) malloc(sizeof(RoomNodeType)); //not being freed?
-
     newNode->data = room;
     newNode->next = NULL;
 
@@ -106,11 +103,6 @@ void addRoom(RoomListType** roomList, RoomType* room){
       currentNode->next = newNode;
     }
     (*roomList)->size++;
-    // room->evidence = malloc(sizeof(EvidenceListType)); //not being freed
-    // room->evidence->head = NULL;
-    // room->evidence->size = 0;
-
-    
 }
 /*
     initalize house values
@@ -118,11 +110,7 @@ void addRoom(RoomListType** roomList, RoomType* room){
         in: evidence - evidenceLog to be placed in house's evidence's log
 */
 void initHouse(HouseType* house,EvidenceType* evidence){
-    // for(int i = 0; i < MAX_EVIDENCE; i++){
-    //     house->evidence[i] = NULL;
-    // }
     house->evidenceLog = evidence;
-   
     house->rooms = malloc(sizeof(RoomListType));
     house->rooms->head = NULL;
     house->rooms->tail = NULL;
