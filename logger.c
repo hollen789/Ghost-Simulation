@@ -252,61 +252,13 @@ void ghostEvidence(GhostType* ghost){
     makes hunter check if the current room contains an evidence that can be collected by said hunter, if so remove it and place it in their evidenceLog
         in: hunter - the hunter that will attempt to collect evidence
 */
-
-void hunterCollect(HunterType* hunter){
-    int alreadyCollected = C_FALSE;
-    int somethingToCollect = C_FALSE;
-    EvidenceType canCollect = hunter->equipment;
-
-    sem_wait(&hunter->room->mutex);
-    EvidenceNodeType* temp = hunter->room->evidence->head;
-    while(temp!=NULL){
-        if((*temp->data)==canCollect){
-            somethingToCollect= C_TRUE;
-            if(temp->next!=NULL){
-                temp->next->prev = temp->prev;
-            }
-            if(temp->prev!=NULL){
-                temp->prev->next = temp->next;
-            }
-        }
-    }
-    free(temp); 
-    hunter->room->evidence->size--;
-    sem_post(&hunter->room->mutex);
-
-    sem_wait(&hunter->mutex);
-    temp = hunter->sharedEvidence->head;    
-    while(temp!=NULL){
-        if((*temp->data)==canCollect){
-            alreadyCollected = C_TRUE;
-            break;
-        }
-        temp = temp->next;
-    }
-
-    if(alreadyCollected == C_FALSE && somethingToCollect == C_TRUE){
-       hunter->sharedEvidence->size++;
-       hunter->sharedEvidence->head->prev = temp;
-       temp->next = hunter->sharedEvidence->head;
-       hunter->sharedEvidence->head = temp;
-       l_hunterCollect(hunter->name, hunter->equipment, hunter->room->name);
-       
-    }
-    else{
-        printf("Hunter %s found nothing to collect\n",hunter->name);
-    }
-    sem_post(&hunter->mutex);
-
-}
-/*
 void hunterCollect(HunterType* hunter) {
     EvidenceType canCollect = hunter->equipment;
     int alreadyCollected = C_FALSE;
     int somethingToCollect = C_FALSE;
     EvidenceNodeType* check = hunter->sharedEvidence->head;
     while(check != NULL) {
-        if ((*check->data) == canCollect) {
+        if (check !=NULL && (*check->data) == canCollect) {
             alreadyCollected = C_TRUE;
             break;
         }
@@ -367,19 +319,15 @@ void hunterCollect(HunterType* hunter) {
     }
     EvidenceNodeType* look = hunter->sharedEvidence->head;
     while(look!=NULL){
-        if(look->data == NULL){
-            break;
+        if(look != NULL){
+            char ev_str[MAX_STR];
+            evidenceToString(*look->data, ev_str);
+            printf("Hunter %s has evidence: %s\n",hunter->name,ev_str);
+            look = look->next;
         }
-        char ev_str[MAX_STR];
-        evidenceToString(*look->data, ev_str);
-        printf("Hunter %s has evidence: %s\n",hunter->name,ev_str);
-        look = look->next;
-        
     }
 
 }
-
-*/
 /*
     makes hunter check if there is sufficient evidence in evidenceLog so the ghost can be identified
         in: hunter - the hunter that will review collected evidences
