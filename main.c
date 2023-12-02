@@ -18,6 +18,11 @@ int main()
         HunterType* hunter = (struct Hunter*) malloc(sizeof(HunterType));
         printf("Please enter Hunter %d name: ", i+1);
         scanf("%s", input);
+        int a=getchar();
+        while (a != '\n' && a != EOF) {
+            a = getchar();
+            // Consume characters until newline or end of file incase of input using letters not numbers
+        }
         printf("Please enter their equipment[EMF(0), TEMPERATURE(1), FINGERPRINTS(2), SOUND(3), RANDOM(OTHER)]: ");
         scanf("%d", &equipmentInput);
         
@@ -33,14 +38,10 @@ int main()
         l_hunterInit(input, hunter->equipment);
         hunters->hunterList[i] = hunter;
         hunter->room = house.rooms->head->data;
-        printf("Hunter %s is in %s and is ready to hunt\n", hunter->name, hunter->room->name);
+        // printf("Hunter %s is in %s and is ready to hunt\n", hunter->name, hunter->room->name);
     }
-    RoomNodeType* temp = house.rooms->head->data->connectedTo->head;
-
-    for(int i = 0; i < house.rooms->head->data->connectedTo->size; i++){
-        printf("%s\n", temp->data->name);
-        temp = temp->next;
-    }
+    printf("\nALL HUNTERS ARE IN THE VAN AND READY TO HUNT\n");
+    printf("--------------------------------------------------------------\n");
     //RUNNING SIMULATION
     srand(time(NULL));
     GhostType ghost;  
@@ -75,7 +76,13 @@ void *hunterUpdate(void* args){
     while(alive){
         usleep(HUNTER_WAIT);
         checkGhost(hunter);
-        int choice = randInt(0, 3);
+        int choice;
+        if(strcmp(hunter->room->name, "Van") == 0 || strcmp(hunter->room->name, "Hallway") == 0){
+            choice = randInt(0, 4);
+        }
+        else{
+            choice = randInt(0, 3);
+        }
         switch (choice)
         {
             case 0:
@@ -83,6 +90,12 @@ void *hunterUpdate(void* args){
                 break;
             case 1:
                 hunterMove(hunter);
+                break;
+            case 2:
+                hunterReview(hunter);
+                break;
+            case 3:
+                hunterEquipmentSwitch(hunter);
                 break;
             default:
                 hunterReview(hunter);
@@ -145,7 +158,7 @@ void *ghostUpdate(void* args){
             break;
         
         default:
-            printf("Ghost is waiting\n");
+            printf("[GHOST WAIT] Ghost is waiting in [%s]\n",ghost->room->name);
             break;
         }
     }

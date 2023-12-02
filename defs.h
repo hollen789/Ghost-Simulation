@@ -77,6 +77,8 @@ void destroyRoomSemaphores(RoomListType*);
 void checkGhost(HunterType*);
 void finalResults(HunterArrayType*, GhostType*);
 void cleanUpHouse(HouseType);
+void hunterEquipmentSwitch(HunterType*);
+void l_hunterSwitch(char*, EvidenceType);
 
 // classes
 struct Room {

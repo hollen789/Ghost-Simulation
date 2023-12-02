@@ -133,6 +133,13 @@ void l_ghostInit(enum GhostClass ghost, char* room) {
     printf("[GHOST INIT] Ghost is a [%s] in room [%s]\n", ghost_str, room);
 }
 
+void l_hunterSwitch(char* hunter, EvidenceType equipment){
+    if (!LOGGING) return;
+    char c[MAX_STR];
+    evidenceToString(equipment, c);
+    printf("[HUNTER SWITCH] [%s] has switched their equipment to [%s]\n", hunter, c);
+}
+
 /*
     Logs the ghost being created.
         in: ghost - the ghost type to log
@@ -140,8 +147,9 @@ void l_ghostInit(enum GhostClass ghost, char* room) {
 */
 void finalResults(HunterArrayType* hunters, GhostType* ghost){
     printf("\n\n--------------------------------------------------------------\n");
-    printf("--------------------------------------------------------------\n");
     printf("FINAL RESULTS:\n");
+    printf("--------------------------------------------------------------\n");
+
     int count = 0;
     int anyAfraid= C_FALSE;
     int anyBored = C_FALSE;
@@ -151,7 +159,7 @@ void finalResults(HunterArrayType* hunters, GhostType* ghost){
             if(hunters->hunterList[i]->fearLevel >=FEAR_MAX){
                 anyAfraid = C_TRUE;
                 count++;
-                printf("Hunter %s has feld\n", hunters->hunterList[i]->name);
+                printf("Hunter %s has fled\n", hunters->hunterList[i]->name);
             }
        }
     }
@@ -177,7 +185,7 @@ void finalResults(HunterArrayType* hunters, GhostType* ghost){
         printf("The ghost has won. All hunters have left the house\n");
     }
     else{
-        printf("The ghost has lost. The hunters have collected enough evidence to identify the ghost\n");
+        printf("The ghost has lost and the hunters have won!\nThe hunters have collected enough evidence to identify the ghost\n");
         printf("The hunters have collected the following evidence:\n");
         for(int i=0; i<MAX_EVIDENCE; i++){
             if(hunters->hunterList[0]->evidenceLog[i] != EV_UNKNOWN){

@@ -65,10 +65,10 @@ void hunterCollect(HunterType* hunter) {
     }
     sem_post(&hunter->mutex);
     if(somethingToCollect == C_FALSE){
-        printf("Hunter %s found nothing to collect\n",hunter->name);
+        printf("{HUNTER COLLECT] Hunter %s found nothing to collect\n",hunter->name);
     }
     else{
-        printf("Hunter %s already collected this evidence(%d)\n",hunter->name, canCollect);
+        printf("[HUNTER COLLECT] Hunter %s already collected this evidence(%d)\n",hunter->name, canCollect);
     }
 }
 /*
@@ -107,3 +107,12 @@ void hunterMove(HunterType* hunter){
     sem_post(&temp->data->mutex);
     l_hunterMove(hunter->name, hunter->room->name);
 }
+
+/*
+    makes hunter randomly switch equipment
+        in: hunter - the hunter that will change it's equipment attribute   
+*/
+void hunterEquipmentSwitch(HunterType* hunter){
+    hunter->equipment = randInt(0, 4);//picks a random new equipment, might be the same as the old one
+    l_hunterSwitch(hunter->name, hunter->equipment);
+} 
