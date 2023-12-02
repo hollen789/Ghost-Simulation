@@ -22,7 +22,7 @@ int main()
     //     temp = temp->next;
     // }
     HunterArrayType* hunters = (struct HunterArray*) malloc(sizeof(HunterType)*HUNTERS);
-    for(int i = 0; i < 4; i++){
+    for(int i = 0; i < HUNTERS; i++){
         char input[MAX_STR]; // Allocate enough memory for the input string
         HunterType* hunter = (struct Hunter*) malloc(sizeof(HunterType));
         printf("Please enter Hunter %d: ", i+1);
@@ -47,6 +47,7 @@ int main()
     srand(time(NULL));
     GhostType ghost;  
     init_ghost(&ghost, house.rooms);
+
     // Define a semaphore for each room
     initSemaphores(house.rooms);
     
@@ -99,11 +100,17 @@ void *hunterUpdate(void* args){
         
         if(hunter->boredLevel == BOREDOM_MAX){
             l_hunterExit(hunter->name, LOG_BORED);
+            sem_wait(&hunter->room->mutex);
+            hunter->room->hunters->hunterList[hunter->id] = NULL;
+            sem_post(&hunter->room->mutex);
             pthread_exit(NULL);
         }
 
         if(hunter->fearLevel == FEAR_MAX){
             l_hunterExit(hunter->name, LOG_FEAR);
+            sem_wait(&hunter->room->mutex);
+            hunter->room->hunters->hunterList[hunter->id] = NULL;
+            sem_post(&hunter->room->mutex);
             pthread_exit(NULL);
         }
     }
@@ -115,28 +122,27 @@ void *hunterUpdate(void* args){
 */
 void *ghostUpdate(void* args){
     int haunting = C_TRUE;
-    int found = C_FALSE;
     GhostType* ghost = (GhostType*) args;
     // GhostType* ghost = ((ThreadDataType*)data)->ghost;
     //HunterArrayType* hunters = ((ThreadDataType*)data)->hunters;
     while(haunting){
+        int found = C_FALSE;
         usleep(GHOST_WAIT);
         // if(ghost->room->ghost == NULL){
         //     printf("test");
         // }
         sem_wait(&ghost->room->mutex);
-        for(int i = 0; i<4; i++){
-            
+        printf("Check room for hunters\n");
+        for(int i = 0; i<HUNTERS; i++){
             if (ghost->room->hunters->hunterList[i] != NULL) {
-  
                 ghost->boredomLevel = 0;
                 found = C_TRUE;
                 break;
             }
         }
         sem_post(&ghost->room->mutex);
-
         if(found == C_FALSE){
+            printf("check no hunters\n");
             ghost->boredomLevel++;
             if(ghost->boredomLevel == BOREDOM_MAX){
                 l_ghostExit(LOG_BORED);
@@ -147,9 +153,11 @@ void *ghostUpdate(void* args){
         switch (choice)
         {
         case 0:
+            printf("ghost moving\n");
             ghostMove(ghost);
             break;
         case 1:
+            printf("ghost leaves evidence\n");
             ghostEvidence(ghost);
             break;
         
@@ -157,7 +165,6 @@ void *ghostUpdate(void* args){
             printf("Ghost is waiting\n");
             break;
         }
-        printf("end of ghost loop\n");
     }
     return NULL;
       
