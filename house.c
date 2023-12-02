@@ -65,7 +65,14 @@ RoomType* createRoom(char *name){
     room->connectedTo = malloc(sizeof(RoomListType));
     room->connectedTo->head = NULL;
     room->connectedTo->tail = NULL;
-    room->evidence = malloc(sizeof(EvidenceListType));
+    room->evidence = malloc(sizeof(EvidenceListType)); //not being freed
+    room->evidence->head = NULL;
+    room->evidence->size = 0;
+
+    room->hunters = malloc(sizeof(HunterArrayType));
+    for(int i = 0;i<HUNTERS;i++){
+        room->hunters->hunterList[i] = NULL;
+    }
     return room;
 }
 /*
@@ -84,7 +91,7 @@ void connectRooms(RoomType* room1, RoomType* room2){
 void addRoom(RoomListType** roomList, RoomType* room){
     // printf("%s",room);
     // printf("%s",room->name);
-    RoomNodeType* newNode = (struct RoomNode*) malloc(sizeof(RoomNodeType));
+    RoomNodeType* newNode = (struct RoomNode*) malloc(sizeof(RoomNodeType)); //not being freed?
 
     newNode->data = room;
     newNode->next = NULL;
@@ -99,14 +106,11 @@ void addRoom(RoomListType** roomList, RoomType* room){
       currentNode->next = newNode;
     }
     (*roomList)->size++;
-    room->evidence = malloc(sizeof(EvidenceListType));
-    room->evidence->head = NULL;
-    room->evidence->size = 0;
+    // room->evidence = malloc(sizeof(EvidenceListType)); //not being freed
+    // room->evidence->head = NULL;
+    // room->evidence->size = 0;
 
-    room->hunters = malloc(sizeof(HunterArrayType));
-    for(int i = 0;i<HUNTERS;i++){
-        room->hunters->hunterList[i] = NULL;
-    }
+    
 }
 /*
     initalize house values

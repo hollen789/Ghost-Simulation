@@ -125,3 +125,52 @@ void checkGhost(HunterType* hunter){
     }
     sem_post(&hunter->room->mutex);
 }
+
+void destroyRoomSemaphores(RoomListType* roomSemaphore) {
+    // Destroy the semaphores for each room
+    RoomNodeType* temp = roomSemaphore->head;
+    while(temp != NULL) {
+        sem_destroy(&(temp->data->mutex));
+        temp = temp->next;
+    }
+}
+
+void cleanUpHouse(HouseType house) {
+    RoomListType* rooms = house.rooms;
+    RoomNodeType* temp = rooms->head;
+    HunterArrayType* hunters = house.hunters;
+    while(temp != NULL) {
+        
+        //free the evidence list nodes then the list itself
+        if (temp->data->evidence != NULL) {
+            EvidenceNodeType* current = temp->data->evidence->head;
+            while (current != NULL) {
+                EvidenceNodeType* next = current->next;
+                free(current);
+                current = next;
+            }
+        }
+        free(temp->data->evidence);
+        // temp->data->evidence = NULL;
+
+        //free the connectedTo list nodes then the list itself
+        RoomNodeType* current = temp->data->connectedTo->head;
+        while (current != NULL) {
+            RoomNodeType* next = current->next;
+            free(current);
+            current = next;
+        }
+        free(temp->data->connectedTo);
+        free(temp->data->hunters);
+        free(temp->data);
+        RoomNodeType* next = temp->next;
+        free(temp); 
+        temp = next;
+        next = NULL;
+
+        
+
+    }
+    free(hunters);
+    free(rooms);
+}

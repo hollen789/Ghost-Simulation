@@ -73,8 +73,10 @@ void hunterReview(HunterType*);
 void hunterMove(HunterType*);
 void initSemaphores(RoomListType*);
 void destroySemaphores(sem_t*);
+void destroyRoomSemaphores(RoomListType*);
 void checkGhost(HunterType*);
 void finalResults(HunterArrayType*, GhostType*);
+void cleanUpHouse(HouseType);
 
 // classes
 struct Room {

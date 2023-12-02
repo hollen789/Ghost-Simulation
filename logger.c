@@ -399,4 +399,11 @@ void finalResults(HunterArrayType* hunters, GhostType* ghost){
         ghostToString(ghost->ghostType,name);
         printf("Ghost has been found. It was a %s\n",name);
     }
+    
+    for(int i=0; i<HUNTERS; i++){
+        if(hunters->hunterList[i] != NULL){
+            sem_destroy(&hunters->hunterList[i]->mutex);
+            free(hunters->hunterList[i]);
+        }
+    }
 }

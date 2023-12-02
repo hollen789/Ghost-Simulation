@@ -67,6 +67,10 @@ int main()
     }
     //FINALIZE PROCESS
     finalResults(hunters, &ghost);
+    destroyRoomSemaphores(house.rooms);
+    cleanUpHouse(house);
+    free(hunters);
+    //free(ghost);
 
     return 0;
 }
