@@ -100,11 +100,17 @@ void *hunterUpdate(void* args){
         
         if(hunter->boredLevel == BOREDOM_MAX){
             l_hunterExit(hunter->name, LOG_BORED);
+            sem_wait(&hunter->room->mutex);
+            hunter->room->hunters->hunterList[hunter->id] = NULL;
+            sem_post(&hunter->room->mutex);
             pthread_exit(NULL);
         }
 
         if(hunter->fearLevel == FEAR_MAX){
             l_hunterExit(hunter->name, LOG_FEAR);
+            sem_wait(&hunter->room->mutex);
+            hunter->room->hunters->hunterList[hunter->id] = NULL;
+            sem_post(&hunter->room->mutex);
             pthread_exit(NULL);
         }
     }
@@ -116,11 +122,11 @@ void *hunterUpdate(void* args){
 */
 void *ghostUpdate(void* args){
     int haunting = C_TRUE;
-    int found = C_FALSE;
     GhostType* ghost = (GhostType*) args;
     // GhostType* ghost = ((ThreadDataType*)data)->ghost;
     //HunterArrayType* hunters = ((ThreadDataType*)data)->hunters;
     while(haunting){
+        int found = C_FALSE;
         usleep(GHOST_WAIT);
         // if(ghost->room->ghost == NULL){
         //     printf("test");
@@ -159,7 +165,6 @@ void *ghostUpdate(void* args){
             printf("Ghost is waiting\n");
             break;
         }
-        printf("end of ghost loop\n");
     }
     return NULL;
       
