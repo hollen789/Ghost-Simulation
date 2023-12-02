@@ -26,7 +26,7 @@ void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, Evi
     hunter->equipment = equipment;
     hunter->fearLevel = 0;
     hunter->boredLevel = 0;
-    (*hunter->evidenceLog) = evidence;
+    hunter->evidenceLog = evidence;
     sem_init(&hunter->mutex, 0, 1);
     //hunter->room = house.rooms->head->data;
 }
@@ -123,7 +123,7 @@ void l_hunterReview(char* hunter, enum LoggerDetails result) {
             printf("[SUFFICIENT]\n");
             break;
         case LOG_INSUFFICIENT:
-            printf("[INSUFFICIENT]\n");
+            printf("[BAD LUCK]\n");
             break;
         default:
             printf("[UNKNOWN]\n");
@@ -227,23 +227,43 @@ void ghostMove(GhostType* ghost){
     makes the ghost leave one of it's random evidences in its current room
         in: ghost - the ghost that will leave one of it's evidence randomly 
 */
+void printEvidenceInRoom(RoomType* room){
+    EvidenceNodeType* temp = room->evidence->head;
+    printf("CHECK 2: room %s evidence %ld:\n", room->name, (long)(room->evidence->head));
+    while(temp != NULL){
+        printf("%d, ", temp->data);
+        temp = temp->next;
+    }
+    printf("\nfinish print\n");
+}
+/*d
+    makes the ghost leave one of it's random evidences in its current room
+        in: ghost - the ghost that will leave one of it's evidence randomly 
+*/
 void ghostEvidence(GhostType* ghost){
+    printf("start ghost evidence\n");
     int choice = randInt(0, 3);
+    printf("choice is :%d\n", choice);
     EvidenceNodeType* newNode = (struct EvidenceNode*) malloc(sizeof(EvidenceNodeType));
     sem_wait(&ghost->room->mutex);
+    printf("get evidence\n");
     EvidenceListType* evidenceList = ghost->room->evidence;
-    newNode->data = ghost->evidence+choice;
+    // printEvidenceInRoom(ghost->room);
+    newNode->data = ghost->evidence[choice];
+    newNode->next = NULL;
+    printf("testing one %d\n",  newNode->data);
     if(evidenceList->head == NULL) {
         evidenceList->head = newNode;
-        newNode->prev = NULL;
     } else {
+      printf("testing two\n");
       EvidenceNodeType* currentNode = evidenceList->head;
       while(currentNode->next != NULL) {
         currentNode = currentNode->next;
       }
-      newNode->prev = currentNode;
       currentNode->next = newNode;
     }
+    printf("finished add evidence in room\n");
+    // printEvidenceInRoom(ghost->room);
     evidenceList->size++;
     sem_post(&ghost->room->mutex);
     l_ghostEvidence(ghost->evidence[choice], ghost->room->name);
@@ -253,36 +273,39 @@ void ghostEvidence(GhostType* ghost){
         in: hunter - the hunter that will attempt to collect evidence
 */
 void hunterCollect(HunterType* hunter) {
+
     EvidenceType canCollect = hunter->equipment;
     int alreadyCollected = C_FALSE;
     int somethingToCollect = C_FALSE;
     for (int i = 0; i < MAX_EVIDENCE; i++) {
-        if (hunter->evidenceLog[i]!=NULL && (*hunter->evidenceLog[i]) == canCollect) {
+        if (hunter->evidenceLog[i] == canCollect) {
             alreadyCollected = C_TRUE;
             break;
         }
     } 
     sem_wait(&hunter->room->mutex);
+    printf("hunter %s is in %s\n",hunter->name, hunter->room->name);
     EvidenceNodeType* temp = hunter->room->evidence->head;
-    EvidenceType* evidence = NULL;
+    EvidenceNodeType* prev = temp;
+    //printEvidenceInRoom(hunter->room);
+    printf("CHECK 4 %d\n", canCollect);
     while (temp != NULL) {
-        if ((*temp->data) == canCollect) {
-            evidence = temp->data;
+        if (temp->data == canCollect) {
             somethingToCollect=C_TRUE;
             // Remove node from list
-            if (temp->prev != NULL) {
-                temp->prev->next = temp->next;
-            }
-            if (temp->next != NULL) {
-                temp->next->prev = temp->prev;
-            }
-            if (temp->prev == NULL) {
+            if ( temp == hunter->room->evidence->head) {
                 hunter->room->evidence->head = temp->next;
+            }else{
+                prev->next = temp->next;
             }
+            printf("CHECK 1: hunter frees evidence %ld\n", (long)temp);
             free(temp);
+            temp = NULL;
             hunter->room->evidence->size--;
             break;
         }
+        printf("CHECK 3: go to next %ld\n", (long)temp->next);
+        prev = temp;
         temp = temp->next;
     }
     sem_post(&hunter->room->mutex);
@@ -290,10 +313,10 @@ void hunterCollect(HunterType* hunter) {
     if (alreadyCollected == C_FALSE && somethingToCollect == C_TRUE) {
         printf("Hunter is adding evidence to array");
         int i = 0;
-        while (hunter->evidenceLog[i] != NULL) {
+        while (hunter->evidenceLog[i] != EV_UNKNOWN && i < MAX_EVIDENCE) {
             i++;
         }
-        hunter->evidenceLog[i] = evidence;
+        hunter->evidenceLog[i] = canCollect;
         l_hunterCollect(hunter->name, hunter->equipment, hunter->room->name);
     }
     sem_post(&hunter->mutex);
@@ -301,7 +324,7 @@ void hunterCollect(HunterType* hunter) {
         printf("Hunter %s found nothing to collect\n",hunter->name);
     }
     else{
-        printf("Hunter %s already collected this evidence\n",hunter->name);
+        printf("Hunter %s already collected this evidence(%d)\n",hunter->name, canCollect);
     }
 
 }
@@ -311,11 +334,12 @@ void hunterCollect(HunterType* hunter) {
         out: potentially confirmation that sufficient evidence has been collected
 */
 void hunterReview(HunterType* hunter){
-    if(hunter->evidenceLog[MAX_EVIDENCE-1]!=NULL){
+    if(hunter->evidenceLog[MAX_EVIDENCE-1]!=EV_UNKNOWN){
         l_hunterReview(hunter->name, LOG_SUFFICIENT);
         // ghostToString(ghost->ghostType,name);
         // printf("Ghost has been found. It was a %s\n",name);
-        pthread_exit(NULL);
+         hunter->room->hunters->hunterList[hunter->id] = NULL;
+         pthread_exit(NULL);
     }
     else{
         l_hunterReview(hunter->name, LOG_INSUFFICIENT);
@@ -334,7 +358,7 @@ void hunterMove(HunterType* hunter){
     }
     sem_wait(&hunter->room->mutex);
     printf("1st sem wait for hunter %s\n",hunter->name);
-    hunter->room->hunters->hunterList[hunter->id-1] = NULL;
+    hunter->room->hunters->hunterList[hunter->id] = NULL;
     sem_post(&hunter->room->mutex);
 
     printf("1st sem post for hunter %s\n",hunter->name);
@@ -345,7 +369,7 @@ void hunterMove(HunterType* hunter){
 
     sem_wait(&temp->data->mutex);
     printf("2nd sem wait for hunter %s\n",hunter->name);
-    hunter->room->hunters->hunterList[hunter->id-1] = hunter;
+    hunter->room->hunters->hunterList[hunter->id] = hunter;
     sem_post(&temp->data->mutex);
     printf("2nd sem post for hunter %s\n",hunter->name);
     
