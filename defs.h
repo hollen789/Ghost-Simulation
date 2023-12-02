@@ -56,7 +56,7 @@ void l_ghostMove(char* room);
 void l_ghostEvidence(enum EvidenceType evidence, char* room);
 void l_ghostExit(enum LoggerDetails reason);
 //new declarations
-void hunterInit(char*, enum EvidenceType, HunterType*, EvidenceType*); 
+void hunterInit(char*, EvidenceType, HunterType*, EvidenceType*); 
 RoomType* createRoom(char*);
 void connectRooms(RoomType*, RoomType*);
 void addRoom(RoomListType**, RoomType*);

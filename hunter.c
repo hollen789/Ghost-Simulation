@@ -6,9 +6,14 @@
         in/out: hunter - the hunter that will be initilized
         in: evidence - the evidenceLog that will be shared among other hunters and the house
 */
-void hunterInit(char* name, enum EvidenceType equipment, HunterType* hunter, EvidenceType* evidence) {
+void hunterInit(char* name, EvidenceType equipment, HunterType* hunter, EvidenceType* evidence) {
     strcpy(hunter->name , name);
-    hunter->equipment = equipment;
+    if(equipment >= 0 && equipment < 4){
+        hunter->equipment = equipment;
+    }
+    else{
+        hunter->equipment = randInt(0, 4);
+    }
     hunter->fearLevel = 0;
     hunter->boredLevel = 0;
     hunter->evidenceLog = evidence;

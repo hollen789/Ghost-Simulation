@@ -58,7 +58,7 @@ void l_hunterReview(char* hunter, enum LoggerDetails result) {
             printf("[SUFFICIENT]\n");
             break;
         case LOG_INSUFFICIENT:
-            printf("[BAD LUCK]\n");
+            printf("[INSUFFICIENT]\n");
             break;
         default:
             printf("[UNKNOWN]\n");

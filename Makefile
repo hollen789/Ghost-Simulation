@@ -1,6 +1,6 @@
-TARGETS = house.o logger.o main.o utils.o
+TARGETS = house.o logger.o main.o utils.o hunter.o ghost.o
 OBJECTS = -Wextra -Wall -lpthread
-all:	house logger main utils
+all:	house logger main utils ghost hunter
 		gcc ${OBJECTS} -o ghostTest ${TARGETS} 
 
 house: 	house.c defs.h
