@@ -19,7 +19,7 @@ void l_hunterInit(char* hunter, enum EvidenceType equipment) {
 */
 void l_hunterMove(char* hunter, char* room) {
     if (!LOGGING) return;
-    printf("[HUNTER MOVE] [%s] has moved into [%s]\n", hunter, room);
+    printf("%-18s| [%s]%s[%s]\n","[HUNTER MOVE]", hunter, " has moved into ", room);
 }
 
 /*
@@ -29,7 +29,7 @@ void l_hunterMove(char* hunter, char* room) {
 */
 void l_hunterExit(char* hunter, enum LoggerDetails reason) {
     if (!LOGGING) return;
-    printf("[HUNTER EXIT] [%s] exited because ", hunter);
+    printf("%-18s| [%s]%s","[HUNTER EXIT]", hunter, " exited because ");
     switch (reason) {
         case LOG_FEAR:
             printf("[FEAR]\n");
@@ -52,7 +52,7 @@ void l_hunterExit(char* hunter, enum LoggerDetails reason) {
 */
 void l_hunterReview(char* hunter, enum LoggerDetails result) {
     if (!LOGGING) return;
-    printf("[HUNTER REVIEW] [%s] reviewed evidence and found ", hunter);
+    printf("%-18s| [%s]%s","[HUNTER REVIEW]", hunter," reviewed evidence and found ");
     switch (result) {
         case LOG_SUFFICIENT:
             printf("[SUFFICIENT]\n");
@@ -75,7 +75,7 @@ void l_hunterCollect(char* hunter, enum EvidenceType evidence, char* room) {
     if (!LOGGING) return;
     char ev_str[MAX_STR];
     evidenceToString(evidence, ev_str);
-    printf("[HUNTER EVIDENCE] [%s] found [%s] in [%s] and [COLLECTED]\n", hunter, ev_str, room);
+    printf("%-18s| [%s]%s[%s]%s[%s]%s","[HUNTER EVIDENCE]", hunter," found ",ev_str," in ", room, " and [COLLECTED]\n");
 }
 
 /*
@@ -84,7 +84,7 @@ void l_hunterCollect(char* hunter, enum EvidenceType evidence, char* room) {
 */
 void l_ghostMove(char* room) {
     if (!LOGGING) return;
-    printf("[GHOST MOVE] Ghost has moved into [%s]\n", room);
+    printf("%-18s|%s[%s]\n","[GHOST MOVE]", " Ghost has moved into ",room);
 }
 
 /*
@@ -93,7 +93,7 @@ void l_ghostMove(char* room) {
 */
 void l_ghostExit(enum LoggerDetails reason) {
     if (!LOGGING) return;
-    printf("[GHOST EXIT] Exited because ");
+    printf("%-18s|%s","[GHOST EXIT]", " Exited because ");
     switch (reason) {
         case LOG_FEAR:
             printf("[FEAR]\n");
@@ -118,7 +118,7 @@ void l_ghostEvidence(enum EvidenceType evidence, char* room) {
     if (!LOGGING) return;
     char ev_str[MAX_STR];
     evidenceToString(evidence, ev_str);
-    printf("[GHOST EVIDENCE] Ghost left [%s] in [%s]\n", ev_str, room);
+    printf("%-18s|%s[%s]%s[%s]\n","[GHOST EVIDENCE]"," Ghost left ",ev_str," in ", room);
 }
 
 /*
@@ -130,14 +130,14 @@ void l_ghostInit(enum GhostClass ghost, char* room) {
     if (!LOGGING) return;
     char ghost_str[MAX_STR];
     ghostToString(ghost, ghost_str);
-    printf("[GHOST INIT] Ghost is a [%s] in room [%s]\n", ghost_str, room);
+    printf("%-18s|%s[%s]%s[%s]\n","[GHOST INIT]", "Ghost is a ", ghost_str," in room ",room);
 }
 
 void l_hunterSwitch(char* hunter, EvidenceType equipment){
     if (!LOGGING) return;
     char c[MAX_STR];
     evidenceToString(equipment, c);
-    printf("[HUNTER SWITCH] [%s] has switched their equipment to [%s]\n", hunter, c);
+    printf("%-18s| [%s]%s[%s]\n","[HUNTER SWITCH]", hunter," has switched their equipment to ", c);
 }
 
 /*

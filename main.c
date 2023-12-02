@@ -158,7 +158,7 @@ void *ghostUpdate(void* args){
             break;
         
         default:
-            printf("[GHOST WAIT] Ghost is waiting in [%s]\n",ghost->room->name);
+            printf("%-18s|%s[%s]\n","[GHOST WAIT]"," Ghost is waiting in ",ghost->room->name);
             break;
         }
     }

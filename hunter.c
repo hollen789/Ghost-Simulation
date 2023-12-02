@@ -65,10 +65,10 @@ void hunterCollect(HunterType* hunter) {
     }
     sem_post(&hunter->mutex);
     if(somethingToCollect == C_FALSE){
-        printf("{HUNTER COLLECT] Hunter %s found nothing to collect\n",hunter->name);
+        printf("%-18s|%s%s%s","[HUNTER COLLECT]"," Hunter ", hunter->name," found nothing to collect\n");
     }
     else{
-        printf("[HUNTER COLLECT] Hunter %s already collected this evidence(%d)\n",hunter->name, canCollect);
+        printf("%-18s|%s%s%s","[HUNTER COLLECT]"," Hunter ",hunter->name, " already collected this evidence\n");
     }
 }
 /*
