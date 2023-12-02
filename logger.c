@@ -346,3 +346,57 @@ void hunterMove(HunterType* hunter){
     l_hunterMove(hunter->name, hunter->room->name);
 }
 
+void finalResults(HunterArrayType* hunters, GhostType* ghost){
+    printf("\n\n--------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------\n");
+    printf("FINAL RESULTS:\n");
+
+    int count = 0;
+    int anyAfraid= C_FALSE;
+    int anyBored = C_FALSE;
+    printf("List of hunters that fell victim to the ghost and ran in fear:\n\n");
+    for(int i=0; i<HUNTERS; i++){
+       if(hunters->hunterList[i] != NULL){
+            if(hunters->hunterList[i]->fearLevel >=FEAR_MAX){
+                anyAfraid = C_TRUE;
+                count++;
+                printf("Hunter %s has feld\n", hunters->hunterList[i]->name);
+            }
+       }
+    }
+    if(anyAfraid == C_FALSE){
+        printf("No hunters have fled\n");
+    }
+    printf("--------------------------------------------------------------\n");
+    printf("List of hunters that got bored and left the house:\n\n");
+    for(int i=0; i<HUNTERS; i++){
+       if(hunters->hunterList[i] != NULL){
+            if(hunters->hunterList[i]->boredLevel >=BOREDOM_MAX){
+                anyBored = C_TRUE;
+                count++;
+                printf("Hunter %s has grown tired of this game\n", hunters->hunterList[i]->name);
+            }
+       }
+    }
+    if(anyBored == C_FALSE){
+        printf("No hunters got bored\n");
+    }
+    printf("--------------------------------------------------------------\n");
+    if(count == 4){
+        printf("The ghost has won. All hunters have left the house\n");
+    }
+    else{
+        printf("The ghost has lost. The hunters have collected enough evidence to identify the ghost\n");
+        printf("The hunters have collected the following evidence:\n");
+        for(int i=0; i<MAX_EVIDENCE; i++){
+            if(hunters->hunterList[0]->evidenceLog[i] != EV_UNKNOWN){
+                char ev_str[MAX_STR];
+                evidenceToString(hunters->hunterList[0]->evidenceLog[i], ev_str);
+                printf("%s\n", ev_str);
+            }
+        }
+        char name[MAX_STR];
+        ghostToString(ghost->ghostType,name);
+        printf("Ghost has been found. It was a %s\n",name);
+    }
+}

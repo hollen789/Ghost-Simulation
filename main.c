@@ -66,6 +66,7 @@ int main()
         pthread_join(hunterThreads[i], NULL);
     }
     //FINALIZE PROCESS
+    finalResults(hunters, &ghost);
 
     return 0;
 }
@@ -114,6 +115,7 @@ void *hunterUpdate(void* args){
             pthread_exit(NULL);
         }
     }
+    
     return NULL;
 }
 /* 

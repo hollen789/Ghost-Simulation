@@ -74,6 +74,7 @@ void hunterMove(HunterType*);
 void initSemaphores(RoomListType*);
 void destroySemaphores(sem_t*);
 void checkGhost(HunterType*);
+void finalResults(HunterArrayType*, GhostType*);
 
 // classes
 struct Room {
